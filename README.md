@@ -6,7 +6,7 @@ This project provides an application that reads an audio stream on the computer 
 
 - n WLED Clients with 144 RGB LEDs each. (where "n" stands for a positive non zero integer)
 
-- IPv4 UDP Communication between this computer and the [WLED](https://kno.wled.ge/) clients on port 19446. For further reference on the interface between this application and WLED have a look at the [documentation](https://kno.wled.ge/interfaces/udp-realtime/).
+- IPv4 UDP Communication between this computer and the [WLED](https://kno.wled.ge/) clients on port 21324. For further reference on the interface between this application and WLED have a look at the [documentation](https://kno.wled.ge/interfaces/udp-realtime/).
 
 - Linux operating system.
 
