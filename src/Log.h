@@ -47,6 +47,13 @@ public:
     static void setLogLevel(LOG_LEVEL level);
 
     /**
+     * Set the minimum level of all log messages. If you set it to 1 no debug messages are going to be logged.
+     * Default: 1
+     * @param level The minimum log level to be logged. Value between 0 and 3
+     */
+    static void setLogLevel(int level);
+
+    /**
      * Log a debug message.
      * @param msg The message.
      */

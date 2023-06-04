@@ -34,3 +34,7 @@ void Log::enableColor(bool enabled) {
 void Log::setLogLevel(LOG_LEVEL level) {
     logLevel = level;
 }
+
+void Log::setLogLevel(int level) {
+    logLevel = static_cast<LOG_LEVEL>(level);
+}
