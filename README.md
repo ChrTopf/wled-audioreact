@@ -21,3 +21,9 @@ This project provides an application that reads an audio stream on the computer 
 ## Configuration
 
 TODO
+
+## Development
+
+```shell
+sudo apt-get install portaudio19-dev
+```

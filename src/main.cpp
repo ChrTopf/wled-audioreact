@@ -3,7 +3,8 @@
 #include <thread>
 #include "Config.h"
 #include "Log.h"
-#include "WLEDSocket.h"
+#include "SignalController.h"
+#include "MaxVolumeEffect.h"
 
 #define VERSION 0.1
 #define CONFIG_FILE "../settings.json"
@@ -30,44 +31,32 @@ int main() {
     int logLevel = config.getInt("loglevel", 1);
     Log::setLogLevel(logLevel);
 
-    //TODO: do the startup sequence
-    //TODO: select an audio stream
-
-    //TODO: remove the following testing code
-
-    //test the log messages
-    Log::d("This is a debug message.");
-    Log::i("Here is an info message.");
-    Log::w("Now this is not critical, but be warned!");
-    Log::e("Something really bad just happend.");
-
+    //do the startup sequence
+    Log::i("Intializing...");
     //get all addressees
     auto adr = config.getValues("addressees");
     for(int i = 0; i < adr.size(); i++){
-        Log::d(adr[i]);
+        stringstream ss;
+        ss << "Streaming to address '" << adr[i] << "'";
+        Log::i(ss.str());
+    }
+    //create the signal controller
+    SignalController controller(adr);
+
+    //TODO: maybe select an audio stream???
+
+    //TODO: remove the following testing code
+
+    controller.setEffect(new MaxVolumeEffect());
+    if(controller.startStreaming()){
+        Log::i("Initialization complete. Started streaming.");
     }
 
-    WLEDSocket conn("192.168.241.59");
-    conn.initialize();
-
-    int r=255,g=0,b=0;
     while (true){
-        if(r > 0 && b == 0){
-            r--;
-            g++;
-        }
-        if(g > 0 && r == 0){
-            g--;
-            b++;
-        }
-        if(b > 0 && g == 0){
-            r++;
-            b--;
-        }
-        //
-        conn.sendMonoData(r, g, b);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+
+    controller.stopStreaming();
 
     return 0;
 }
