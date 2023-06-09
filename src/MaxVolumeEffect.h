@@ -8,8 +8,10 @@
 
 class MaxVolumeEffect : public Effect{
 private:
-    int _r = 255,_g = 0,_b = 0;
+    float _r = 255.0, _g = 0.0, _b = 0.0;
     float _maxVal = 0.0;
+    float _lastVal = 0.0;
+    float _secondLastVal = 0.0;
 public:
     void onData(const std::vector<float> &data) override;
 };
