@@ -15,21 +15,41 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
             currentMax = val;
         }
     }
+    cout<<currentMax<<" sampleAbsMax | ";
+    float currentRMS = 0;
+    for(int i = 0; i < data.size(); i++){
+        float val = data[i];
+        currentRMS += val*val;
+    }
+    currentRMS = sqrt(currentRMS / ((float) data.size() / 2));
+    cout<<currentRMS<<" sampleRMS | ";
+
+    if(currentRMS == 0){
+        _maxVal = 0;
+        return;
+    }
+    currentRMS = log10(currentRMS)*20;
+    cout<<currentRMS<<" dBm"<<endl;
+    currentRMS = abs(1/currentRMS);
+
+    currentMax = log10(currentMax)*20;
+    cout<<currentRMS<<" dBm_max"<<endl;
+    currentMax = abs(1/currentMax);
 
     //implement causal system with delay
-    //currentMax = 0.25 * _secondLastVal + 0.5 * _lastVal + currentMax;
-    currentMax = 0.5 * (_lastVal - currentMax) + 0.25 * _lastVal + currentMax;
+    //currentRMS = 0.25 * _secondLastVal + 0.5 * _lastVal + currentRMS;
+    //currentRMS = 0.5 * (_lastVal - currentRMS) + 0.25 * _lastVal + currentRMS;
 
     //save last values
     _secondLastVal = _lastVal;
-    _lastVal = currentMax;
+    _lastVal = currentRMS;
     //adjust the maximum value very slowly to counter volume decreasing (if sb makes the music more quiet)
-    _maxVal -= 0.0001 * currentMax;
+    _maxVal -= 0.0001 * currentRMS;
 
     float cSpeed;
     int height;
     //check if no audio is playing right now
-    if(currentMax < 0.01){
+    if(currentRMS < 0.01){
         height = 0;
         //color speed factor
         cSpeed = 0.01 * SPEED_MULTIPLIER;
@@ -39,9 +59,9 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
             _maxVal = currentMax;
         }
         //calculate the next height
-        height = (int) (144 * (currentMax / _maxVal));
+        height = (int) (144 * (currentRMS / _maxVal)); // LED_COUNT
         //color speed factor
-        cSpeed = (currentMax / _maxVal) * SPEED_MULTIPLIER;
+        cSpeed = (currentRMS / _maxVal) * SPEED_MULTIPLIER;
     }
 
     //calculate the next color
@@ -69,6 +89,12 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
         green[i] = 0;
         blue[i] = 0;
     }
+    int peak_height = max(min((int) (144 * (currentMax / _maxVal)), 143), 0); // LED_COUNT
+    cout<<peak_height<<" pH"<<endl;
+    red[peak_height] = (char) 255 - round(_r);
+    green[peak_height] = (char) 255 - round(_g);
+    blue[peak_height] = (char) 255 - round(_r);
     //now send the data
     _network->sendData(red, green, blue);
+    Log::i("sent");
 }
