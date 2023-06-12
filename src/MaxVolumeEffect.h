@@ -12,6 +12,7 @@ private:
     float _maxVal = 0.0;
     float _lastVal = 0.0;
     float _secondLastVal = 0.0;
+    float _trueRMSPeak = 0.0;
 public:
     void onData(const std::vector<float> &data) override;
 };

@@ -33,7 +33,7 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
     currentRMS = abs(1/currentRMS);
 
     currentMax = log10(currentMax)*20;
-    cout<<currentRMS<<" dBm_max"<<endl;
+    cout<<currentMax<<" dBm_max"<<endl;
     currentMax = abs(1/currentMax);
 
     //implement causal system with delay
@@ -46,6 +46,11 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
     //adjust the maximum value very slowly to counter volume decreasing (if sb makes the music more quiet)
     _maxVal -= 0.0001 * currentRMS;
 
+    _trueRMSPeak -= 0.0005;
+    if(_trueRMSPeak < currentRMS){
+        _trueRMSPeak = currentRMS;
+    }
+
     float cSpeed;
     int height;
     //check if no audio is playing right now
@@ -55,8 +60,8 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
         cSpeed = 0.01 * SPEED_MULTIPLIER;
     }else{
         //check if this is a new record in volume
-        if(currentMax > _maxVal){
-            _maxVal = currentMax;
+        if(currentRMS > _maxVal){
+            _maxVal = currentRMS;
         }
         //calculate the next height
         height = (int) (144 * (currentRMS / _maxVal)); // LED_COUNT
@@ -89,7 +94,7 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
         green[i] = 0;
         blue[i] = 0;
     }
-    int peak_height = max(min((int) (144 * (currentMax / _maxVal)), 143), 0); // LED_COUNT
+    int peak_height = max(min((int) (144 * (_trueRMSPeak / _maxVal)), 143), 0); // LED_COUNT
     cout<<peak_height<<" pH"<<endl;
     red[peak_height] = (char) 255 - round(_r);
     green[peak_height] = (char) 255 - round(_g);
