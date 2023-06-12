@@ -10,6 +10,7 @@ int audioCallback(const void* inputBuffer, void* outputBuffer, unsigned long fra
     //first, check if the last bunch of samples was already processed
     if(!AudioProcessor::sampleBuffer.empty()){
         //skip the next couple of samples
+        Log::w("Too slow, skipping samples");
         return paContinue;
     }
     //cast the input buffer
@@ -120,6 +121,7 @@ void AudioProcessor::onProcessSamples() {
             std::unique_lock<std::mutex> lock(mutex);
             conditionVariable.wait(lock, []{return bufferReady;});
         }
+        bufferReady = false;
 
         if(!sampleBuffer.empty() && shouldRun){
             //check if a _processor is available

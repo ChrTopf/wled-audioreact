@@ -13,7 +13,7 @@
 #include "Effect.h"
 
 #define SAMPLE_RATE 44100
-#define BUFFER_SIZE 45
+#define BUFFER_SIZE 1470 //882 for 50fps, 1470 for 30fps
 
 class AudioProcessor{
 private:
@@ -40,7 +40,7 @@ public:
     static void destroy();
     //monitor concept for multithreading
     inline static std::vector<float> sampleBuffer = std::vector<float>();
-    inline static std::condition_variable conditionVariable = std::condition_variable();
+    inline static std::condition_variable conditionVariable;
     inline static bool bufferReady = false;
     //core methods
     void setEffect(Effect *effect);
