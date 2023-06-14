@@ -20,10 +20,22 @@ This project provides an application that reads an audio stream on the computer 
 
 ## Configuration
 
-TODO
+TODO: W.I.P.
 
-## Development
+## Developer Notes
+
+Before being able to build the application the [PortAudio Library](http://www.portaudio.com/) needs to be installed:
 
 ```shell
 sudo apt-get install portaudio19-dev
 ```
+
+(The json parser library will automatically be downloaded and used.)
+
+## Version History
+
+| Version | Type     | Date       | Changes                                        |
+| ------- | -------- | ---------- | ---------------------------------------------- |
+| 0.1     | snapshot | 09.06.2023 | implemented basic structure; added test effect |
+| 0.2     | snapshot | 12.06.2023 | implemented first test effect                  |
+|         |          |            |                                                |
