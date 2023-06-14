@@ -7,13 +7,19 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "WLEDSocket.h"
 
 //TODO: implement this class
 
 class NetworkHandler {
+private:
+    const std::vector<std::string> &_addressees;
+    std::vector<WLEDSocket> _sockets;
 public:
     NetworkHandler(const std::vector<std::string> &addressees);
+    bool initializeAll();
     void sendData(const char red[144], const char green[144], const char blue[144]);
+    void closeAll();
 };
 
 
