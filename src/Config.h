@@ -13,12 +13,16 @@ using json = nlohmann::json;
 
 class Config {
 private:
+    std::string _filePath;
     json data;
 public:
     Config(const std::string &filename);
     std::string getString(const std::string &key, const std::string &defaultVal);
     int getInt(const std::string &key, const int &defaultVal);
     std::vector<std::string> getValues(const std::string &key);
+    bool keyExists(const std::string &key);
+    bool isEmpty(const std::string &key);
+    bool setInt(const std::string &key, const int &value);
 };
 
 

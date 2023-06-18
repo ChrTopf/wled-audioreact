@@ -3,6 +3,7 @@
 //
 #include "MaxVolumeEffect.h"
 #include <cmath>
+#include <sstream>
 
 #define SPEED_MULTIPLIER 0.5
 
@@ -15,25 +16,26 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
             currentMax = val;
         }
     }
-    cout<<currentMax<<" sampleAbsMax | ";
+    //cout<<currentMax<<" sampleAbsMax | ";
     float currentRMS = 0;
     for(int i = 0; i < data.size(); i++){
         float val = data[i];
         currentRMS += val*val;
     }
     currentRMS = sqrt(currentRMS / ((float) data.size() / 2));
-    cout<<currentRMS<<" sampleRMS | ";
+    //print the current maximum and rms value
+    //cout<<currentRMS<<" sampleRMS | ";
 
     if(currentRMS == 0){
         _maxVal = 0;
         return;
     }
     currentRMS = log10(currentRMS)*20;
-    cout<<currentRMS<<" dBm"<<endl;
+    //cout<<currentRMS<<" dBm"<<endl;
     currentRMS = abs(1/currentRMS);
 
     currentMax = log10(currentMax)*20;
-    cout<<currentMax<<" dBm_max"<<endl;
+    //cout<<currentMax<<" dBm_max"<<endl;
     currentMax = abs(1/currentMax);
 
     //implement causal system with delay
@@ -95,11 +97,11 @@ void MaxVolumeEffect::onData(const std::vector<float> &data) {
         blue[i] = 0;
     }
     int peak_height = max(min((int) (144 * (_trueRMSPeak / _maxVal)), 143), 0); // LED_COUNT
-    cout<<peak_height<<" pH"<<endl;
+    //cout<<peak_height<<" pH"<<endl;
+    //set the peak point
     red[peak_height] = (char) 255 - round(_r);
     green[peak_height] = (char) 255 - round(_g);
     blue[peak_height] = (char) 255 - round(_r);
     //now send the data
     _network->sendData(red, green, blue);
-    Log::i("sent");
 }

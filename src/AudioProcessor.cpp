@@ -2,7 +2,7 @@
 // Created by chrtopf on 07.06.23.
 //
 #include <sstream>
-#include <string.h>
+#include <cstring>
 #include "AudioProcessor.h"
 #include "Log.h"
 
@@ -37,6 +37,19 @@ void runProcessThread(){
     AudioProcessor::getInstance()->onProcessSamples();
 }
 
+AudioProcessor::AudioProcessor() {
+    //initialize the running bool
+    shouldRun = true;
+    //initialize port audio
+    PaError error = Pa_Initialize();
+    if(error != paNoError){
+        printPaError("Could not initialize PortAudio.", error);
+        exit(1);
+    }
+    //set the default stream index
+    _audioStreamIndex = Pa_GetDefaultOutputDevice();
+}
+
 AudioProcessor *AudioProcessor::getInstance() {
     if(AudioProcessor::instance == nullptr) {
         return new AudioProcessor();
@@ -48,8 +61,19 @@ void AudioProcessor::destroy() {
     delete AudioProcessor::instance;
 }
 
+void AudioProcessor::printPaError(const std::string &text, const PaError &error) {
+    stringstream ss;
+    ss << text << " Error: " << Pa_GetErrorText(error);
+    Log::e(ss.str());
+}
+
+//region effects
+
 void AudioProcessor::setEffect(Effect *effect) {
-    _effect = effect;
+    //do not overwrite existing effects, as this could create a memory leak
+    if(_effect == nullptr){
+        _effect = effect;
+    }
 }
 
 bool AudioProcessor::hasEffect() {
@@ -62,45 +86,42 @@ void AudioProcessor::removeEffect() {
     _effect = nullptr;
 }
 
+//endregion
+
+//region core
+
 bool AudioProcessor::start() {
     //start the thread here
+    shouldRun = true;
     processor = std::thread(runProcessThread);
-    //initialize port audio
-    PaError error = Pa_Initialize();
-    if(error != paNoError){
-        printPaError("Could not initialize PortAudio.", error);
-        return false;
-    }
-    /*//get the connected devices
-    int connectedDevices = Pa_GetDeviceCount();
-    if(connectedDevices < 0){
-        Log::e("Could not determine the amount of audio devices.");
-        return false;
-    }
-    //iterate through all available devices
-    int deviceIndex = -1;
-    for (int i = 0; i < connectedDevices; i++) {
-        const PaDeviceInfo *deviceInfo = Pa_GetDeviceInfo(i);
-        if (deviceInfo->maxInputChannels > 0 && strcmp(deviceInfo->name, "spotify") == 0) {
-            deviceIndex = i;
-            break;
-        }
-    }
     //check if the correct device was found
-    if(deviceIndex < 0){
-        Log::e("Could not find the system default stream.");
-        return false;
+    if(_audioStreamIndex < 0 || (_audioStreamIndex + 1) > Pa_GetDeviceCount()){
+        //chose the default output device instead
+        _audioStreamIndex = Pa_GetDefaultOutputDevice();
+        //report the issue
+        stringstream ss;
+        ss << "Could not find the audio stream with index " << _audioStreamIndex << ". Using the default stream " << Pa_GetDefaultOutputDevice() << " '" << Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice())->name << "' now.";
+        Log::w(ss.str());
+    }else{
+        //print the chosen stream
+        stringstream ss;
+        ss << "Using the audio stream " << _audioStreamIndex << " (name: '" << Pa_GetDeviceInfo(_audioStreamIndex)->name << "') now.";
+        Log::i(ss.str());
     }
-    cout << Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice())->name << endl;*/
     //configure the input device
     PaStreamParameters inputParameters;
-    inputParameters.device = Pa_GetDefaultOutputDevice();
+    inputParameters.device = _audioStreamIndex;
     inputParameters.channelCount = 1;
     inputParameters.sampleFormat = paFloat32;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
+    //get and the default sample rate for the device stream
+    double sampleRate = Pa_GetDeviceInfo(_audioStreamIndex)->defaultSampleRate;
+    stringstream ss;
+    ss << "Streaming with sample rate " << sampleRate << ".";
+    Log::i(ss.str());
     //open the device for recording
-    error = Pa_OpenStream(&stream, &inputParameters, NULL, SAMPLE_RATE, BUFFER_SIZE, paClipOff, audioCallback, NULL);
+    PaError error = Pa_OpenStream(&stream, &inputParameters, NULL, sampleRate, BUFFER_SIZE, paClipOff, audioCallback, NULL);
     if(error != paNoError){
         printPaError("Could not open audio stream.", error);
         return false;
@@ -132,6 +153,7 @@ void AudioProcessor::onProcessSamples() {
             sampleBuffer.clear();
         }
     }
+    Log::d("Stopped sample processing thread.");
 }
 
 void AudioProcessor::stop() {
@@ -150,8 +172,31 @@ void AudioProcessor::stop() {
     processor.join();
 }
 
-void AudioProcessor::printPaError(const std::string &text, const PaError &error) {
-    stringstream ss;
-    ss << text << " Error: " << Pa_GetErrorText(error);
-    Log::e(ss.str());
+//endregion
+
+void AudioProcessor::printAudioStreams() {
+    //get the connected devices
+    int connectedDevices = Pa_GetDeviceCount();
+    if(connectedDevices < 0){
+        Log::e("Could not determine the amount of audio devices.");
+    }
+    //iterate through all available devices
+    for (int i = 0; i < connectedDevices; i++) {
+        const PaDeviceInfo *deviceInfo = Pa_GetDeviceInfo(i);
+        if (deviceInfo->maxInputChannels > 0) {
+            //print each stream with its index
+            cout << "[" << i << "]" << " Name: '" << deviceInfo->name << "', Sample-Rate: " << deviceInfo->defaultSampleRate << endl;
+        }
+    }
+}
+
+bool AudioProcessor::setAudioStreamIndex(int index) {
+    if(index < 0 || (index + 1) > Pa_GetDeviceCount()){
+        stringstream ss;
+        ss << "The audio stream with index " << index << " does not exist.";
+        Log::e(ss.str());
+        return false;
+    }
+    _audioStreamIndex = index;
+    return true;
 }

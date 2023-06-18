@@ -8,15 +8,16 @@
 #include "Log.h"
 
 Config::Config(const std::string &filename) {
+    _filePath = filename;
     //try to open the file
     std::ifstream inputStream;
-    inputStream.open(filename);
+    inputStream.open(_filePath);
     if(inputStream){
         //check if the file is empty
         if(inputStream.peek() == std::ifstream::traits_type::eof()){
             //report that the file is empty
             stringstream ss;
-            ss << "The config file '" << filename << "' is empty. Please copy the default one!";
+            ss << "The config file '" << _filePath << "' is empty. Please copy the default one!";
             Log::e(ss.str());
             //exit the application
             std::exit(1);
@@ -28,7 +29,7 @@ Config::Config(const std::string &filename) {
     }else{
         //report that the file could not be opened
         stringstream ss;
-        ss << "Could not open config file '" << filename << "'. Are the right permissions set? Is the file present?";
+        ss << "Could not open config file '" << _filePath << "'. Are the right permissions set? Is the file present?";
         Log::e(ss.str());
         //exit the application
         std::exit(1);
@@ -54,3 +55,22 @@ std::vector<std::string> Config::getValues(const string &key) {
     //return the result as an array
     return result;
 }
+
+bool Config::keyExists(const string &key) {
+    return data.contains(key);
+}
+
+bool Config::isEmpty(const string &key) {
+    return data.at(key).empty();
+}
+
+bool Config::setInt(const string &key, const int &value) {
+    //set the value
+    data[key] = value;
+    //safe the file
+    std::ofstream file(_filePath);
+    file << data;
+    return false;
+}
+
+

@@ -40,16 +40,20 @@ int main() {
         ss << "Streaming to address '" << adr[i] << "'";
         Log::i(ss.str());
     }
-    //create the signal controller
-    SignalController controller(adr);
 
-    //TODO: maybe select an audio stream???
+    //create the signal controller
+    SignalController controller(adr, config);
+    //let the user choose the audio stream
+    controller.chooseAudioStream();
+    //TODO: choose an effect
+    controller.setEffect(new MaxVolumeEffect());
 
     //TODO: remove the following testing code
 
-    controller.setEffect(new MaxVolumeEffect());
     if(controller.startStreaming()){
         Log::i("Initialization complete. Started streaming.");
+    }else{
+        exit(1);
     }
 
     while (true){

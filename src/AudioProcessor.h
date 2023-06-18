@@ -18,15 +18,17 @@
 class AudioProcessor{
 private:
     //singleton
-    AudioProcessor(){};
+    AudioProcessor();
     inline static AudioProcessor *instance = nullptr;
     //audio members
     PaStream* stream;
+    int _audioStreamIndex;
+    //threading
     std::thread processor;
-    //thread control
-    bool shouldRun = true;
+    bool shouldRun;
     //effect
-    inline static Effect *_effect = nullptr;
+    inline static Effect *_effect = nullptr; //needs to be static to work with two threads
+    //internal stuff
     void printPaError(const std::string &text, const PaError &error);
 protected:
     //monitor concept for multithreading
@@ -42,13 +44,17 @@ public:
     inline static std::vector<float> sampleBuffer = std::vector<float>();
     inline static std::condition_variable conditionVariable;
     inline static bool bufferReady = false;
-    //core methods
+    //setting effects
     void setEffect(Effect *effect);
     bool hasEffect();
     void removeEffect();
+    //core methods
     bool start();
     void onProcessSamples();
     void stop();
+    //audio stream selection
+    void printAudioStreams();
+    bool setAudioStreamIndex(int index);
 };
 
 
