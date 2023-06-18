@@ -8,18 +8,24 @@
 #include "NetworkHandler.h"
 #include "AudioProcessor.h"
 #include "WLEDSocket.h"
+#include "Config.h"
 
 
 class SignalController {
 private:
     NetworkHandler _network;
     AudioProcessor *_processor;
-public:
-    SignalController(const std::vector<std::string> &addressees);
-    ~SignalController();
+    Config _config;
     void setEffect(Effect *effect);
+public:
+    SignalController(const std::vector<std::string> &addressees, const Config &config);
+    ~SignalController();
+    void chooseAudioStream();
+    void chooseEffect();
     bool startStreaming();
     void stopStreaming();
+    void userSetNewAudioIndex();
+    void userSetNewEffectIndex();
 };
 
 

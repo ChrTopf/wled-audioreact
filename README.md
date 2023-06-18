@@ -26,6 +26,8 @@ TODO: W.I.P.
 
 Before being able to build the application the [PortAudio Library](http://www.portaudio.com/) needs to be installed:
 
+Install portaudio library first:
+
 ```shell
 sudo apt-get install portaudio19-dev
 ```
@@ -39,3 +41,7 @@ sudo apt-get install portaudio19-dev
 | 0.1     | snapshot | 09.06.2023 | implemented basic structure; added test effect |
 | 0.2     | snapshot | 12.06.2023 | implemented first test effect                  |
 |         |          |            |                                                |
+
+When implementing a new Effect, do not forget to add it in the Effects.cpp! 
+
+When implementing a new Effect, do not forget to add it in the Effects.cpp!
