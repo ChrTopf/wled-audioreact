@@ -8,7 +8,19 @@ FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download
 FetchContent_MakeAvailable(json)
 include_directories(/usr/include)
 
-add_executable(wled-audioreact main.cpp Log.cpp Config.cpp NetworkHandler.cpp WLEDSocket.cpp AudioProcessor.cpp SignalController.cpp Effect.h MaxVolumeEffect.cpp)
+add_executable(wled-audioreact
+        main.cpp
+        Log.cpp
+        Config.cpp
+        NetworkHandler.cpp
+        WLEDSocket.cpp
+        AudioProcessor.cpp
+        SignalController.cpp
+        Effect.h
+        effects/Effects.cpp
+        effects/RMSMaxVolumeEffect.cpp
+        effects/AverageVolumeEffect.cpp
+        effects/MaxVolumeEffect.cpp)
 
 target_link_libraries(wled-audioreact PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)

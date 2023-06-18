@@ -2,11 +2,11 @@
 // Created by chrtopf on 08.06.23.
 //
 
-#ifndef WLED_AUDIOREACT_MAXVOLUMEEFFECT_H
-#define WLED_AUDIOREACT_MAXVOLUMEEFFECT_H
-#include "Effect.h"
+#ifndef WLED_AUDIOREACT_RMSMAXVOLUMEEFFECT_H
+#define WLED_AUDIOREACT_RMSMAXVOLUMEEFFECT_H
+#include "../Effect.h"
 
-class MaxVolumeEffect : public Effect{
+class RMSMaxVolumeEffect : public Effect{
 private:
     float _r = 255.0, _g = 0.0, _b = 0.0;
     float _maxVal = 0.0;
@@ -18,4 +18,4 @@ public:
 };
 
 
-#endif //WLED_AUDIOREACT_MAXVOLUMEEFFECT_H
+#endif //WLED_AUDIOREACT_RMSMAXVOLUMEEFFECT_H

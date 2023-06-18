@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "Log.h"
 #include "SignalController.h"
-#include "MaxVolumeEffect.h"
+#include "effects/RMSMaxVolumeEffect.h"
 
 #define VERSION 0.1
 #define CONFIG_FILE "../settings.json"
@@ -45,22 +45,50 @@ int main() {
     SignalController controller(adr, config);
     //let the user choose the audio stream
     controller.chooseAudioStream();
-    //TODO: choose an effect
-    controller.setEffect(new MaxVolumeEffect());
+    //choose an effect
+    controller.chooseEffect();
+    //start streaming
+    controller.startStreaming();
 
-    //TODO: remove the following testing code
-
-    if(controller.startStreaming()){
-        Log::i("Initialization complete. Started streaming.");
-    }else{
-        exit(1);
-    }
-
-    while (true){
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    bool exit = false;
+    while(!exit){
+        //print usage information
+        cout << "--------------------------------------------------------------------------------" << endl;
+        cout << "Choose an action by its index:" << endl;
+        cout << "[0]: Exit the application." << endl;
+        cout << "[1]: Change effect." << endl;
+        cout << "[2]: Switch audio source." << endl;
+        //let the user decide
+        int index = -1;
+        while(true) {
+            //get the index
+            cout << "> ";
+            cin >> index;
+            //check if the index has been incorrect
+            if(index < 0 || index > 2){
+                Log::w("Please enter a valid index! Try again:");
+            }else{
+                break;
+            }
+        }
+        //process the user input
+        switch (index) {
+            case 0:
+                exit = true;
+                break;
+            case 1:
+                controller.userSetNewEffectIndex();
+                Log::i("The effect has been changed.");
+                break;
+            case 2:
+                controller.stopStreaming();
+                controller.userSetNewAudioIndex();
+                controller.startStreaming();
+                break;
+        }
     }
 
     controller.stopStreaming();
-
+    Log::i("Goodbye!");
     return 0;
 }

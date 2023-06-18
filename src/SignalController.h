@@ -16,14 +16,16 @@ private:
     NetworkHandler _network;
     AudioProcessor *_processor;
     Config _config;
-    void userSetNewAudioIndex();
+    void setEffect(Effect *effect);
 public:
     SignalController(const std::vector<std::string> &addressees, const Config &config);
     ~SignalController();
     void chooseAudioStream();
-    void setEffect(Effect *effect);
+    void chooseEffect();
     bool startStreaming();
     void stopStreaming();
+    void userSetNewAudioIndex();
+    void userSetNewEffectIndex();
 };
 
 

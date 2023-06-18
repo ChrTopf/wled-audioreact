@@ -38,8 +38,6 @@ void runProcessThread(){
 }
 
 AudioProcessor::AudioProcessor() {
-    //initialize the running bool
-    shouldRun = true;
     //initialize port audio
     PaError error = Pa_Initialize();
     if(error != paNoError){
@@ -70,8 +68,12 @@ void AudioProcessor::printPaError(const std::string &text, const PaError &error)
 //region effects
 
 void AudioProcessor::setEffect(Effect *effect) {
+    std::lock_guard<std::mutex> lock(effectMutex);
     //do not overwrite existing effects, as this could create a memory leak
     if(_effect == nullptr){
+        _effect = effect;
+    }else{
+        delete _effect;
         _effect = effect;
     }
 }
@@ -80,19 +82,16 @@ bool AudioProcessor::hasEffect() {
     return _effect != nullptr;
 }
 
-void AudioProcessor::removeEffect() {
-    //delete the effect
-    delete _effect;
-    _effect = nullptr;
-}
-
 //endregion
 
 //region core
 
 bool AudioProcessor::start() {
     //start the thread here
-    shouldRun = true;
+    {
+        std::lock_guard<std::mutex> lock(interruptMutex);
+        shouldRun = true;
+    }
     processor = std::thread(runProcessThread);
     //check if the correct device was found
     if(_audioStreamIndex < 0 || (_audioStreamIndex + 1) > Pa_GetDeviceCount()){
@@ -118,7 +117,7 @@ bool AudioProcessor::start() {
     //get and the default sample rate for the device stream
     double sampleRate = Pa_GetDeviceInfo(_audioStreamIndex)->defaultSampleRate;
     stringstream ss;
-    ss << "Streaming with sample rate " << sampleRate << ".";
+    ss << "Reading with sample rate " << sampleRate << ".";
     Log::i(ss.str());
     //open the device for recording
     PaError error = Pa_OpenStream(&stream, &inputParameters, NULL, sampleRate, BUFFER_SIZE, paClipOff, audioCallback, NULL);
@@ -136,27 +135,43 @@ bool AudioProcessor::start() {
 }
 
 void AudioProcessor::onProcessSamples() {
-    while (shouldRun){
+    bool running = true;
+    while (running){
         //wait for new samples
         {
-            std::unique_lock<std::mutex> lock(mutex);
+            std::unique_lock<std::mutex> lock(audioBufferMutex);
             conditionVariable.wait(lock, []{return bufferReady;});
         }
         bufferReady = false;
 
-        if(!sampleBuffer.empty() && shouldRun){
-            //check if a _processor is available
-            if(_effect != nullptr){
-                //then process the samples
-                _effect->onData(sampleBuffer);
+        if(!sampleBuffer.empty()){
+            {
+                std::lock_guard<std::mutex> lock(effectMutex);
+                //check if a _processor is available
+                if(_effect != nullptr){
+                    //then process the samples
+                    _effect->onData(sampleBuffer);
+                }
             }
             sampleBuffer.clear();
+        }
+
+        //check if this thread needs to be stopped
+        {
+            std::lock_guard<std::mutex> lock(interruptMutex);
+            running = shouldRun;
         }
     }
     Log::d("Stopped sample processing thread.");
 }
 
 void AudioProcessor::stop() {
+    //stop the processing thread
+    {
+        std::lock_guard<std::mutex> lock(interruptMutex);
+        shouldRun = false;
+    }
+    processor.join();
     //stop the audio stream
     PaError error = Pa_StopStream(stream);
     if(error != paNoError){
@@ -167,9 +182,6 @@ void AudioProcessor::stop() {
     if(error != paNoError){
         printPaError("Could not close audio stream.", error);
     }
-    //stop the processing thread
-    shouldRun = false;
-    processor.join();
 }
 
 //endregion

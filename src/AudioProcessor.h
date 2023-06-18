@@ -25,14 +25,16 @@ private:
     int _audioStreamIndex;
     //threading
     std::thread processor;
-    bool shouldRun;
+    std::mutex interruptMutex;
+    static inline bool shouldRun = false; //needs to be static to work with two threads
     //effect
+    std::mutex effectMutex;
     inline static Effect *_effect = nullptr; //needs to be static to work with two threads
     //internal stuff
     void printPaError(const std::string &text, const PaError &error);
 protected:
     //monitor concept for multithreading
-    std::mutex mutex;
+    std::mutex audioBufferMutex;
     bool processorReady = false;
 public:
     //singleton
@@ -47,7 +49,6 @@ public:
     //setting effects
     void setEffect(Effect *effect);
     bool hasEffect();
-    void removeEffect();
     //core methods
     bool start();
     void onProcessSamples();

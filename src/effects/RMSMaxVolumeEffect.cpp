@@ -1,13 +1,12 @@
 //
 // Created by chrtopf on 08.06.23.
 //
-#include "MaxVolumeEffect.h"
+#include "RMSMaxVolumeEffect.h"
 #include <cmath>
-#include <sstream>
 
 #define SPEED_MULTIPLIER 0.5
 
-void MaxVolumeEffect::onData(const std::vector<float> &data) {
+void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
     //go through all the samples
     float currentMax = 0;
     for(int i = 0; i < data.size(); i++){
