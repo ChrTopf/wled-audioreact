@@ -43,5 +43,3 @@ sudo apt-get install portaudio19-dev
 |         |          |            |                                                |
 
 When implementing a new Effect, do not forget to add it in the Effects.cpp! 
-
-When implementing a new Effect, do not forget to add it in the Effects.cpp!
