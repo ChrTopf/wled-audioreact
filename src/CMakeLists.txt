@@ -23,4 +23,5 @@ add_executable(wled-audioreact
         effects/MaxVolumeEffect.cpp)
 
 target_link_libraries(wled-audioreact PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
+#target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
+target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
