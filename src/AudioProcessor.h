@@ -54,8 +54,8 @@ public:
     void onProcessSamples();
     void stop();
     //audio stream selection
-    void printAudioStreams();
-    bool setAudioStreamIndex(int index);
+    vector<string> printAudioStreams(const vector<string> &blackList);
+    bool setAudioStreamByName(string name);
 };
 
 

@@ -4,12 +4,13 @@
 #include "SignalController.h"
 #include "effects/Effects.h"
 
-#define AUDIO_STREAM_INDEX_KEY "audioStreamIndex"
+#define AUDIO_STREAM_INDEX_KEY "audioStream"
 #define EFFECT_INDEX_KEY "effectIndex"
 
 SignalController::SignalController(const std::vector<std::string> &addressees, const Config &config) : _network(NetworkHandler(addressees)),
                                                                                                        _config(config){
     _processor = AudioProcessor::getInstance();
+    _blacklist = _config.getValues("streamBlacklist");
 }
 
 SignalController::~SignalController() {
@@ -25,16 +26,18 @@ void SignalController::chooseAudioStream() {
         userSetNewAudioIndex();
     }else{
         //get the last index from the config
-        int index = _config.getInt(AUDIO_STREAM_INDEX_KEY, -1);
+        string name = _config.getString(AUDIO_STREAM_INDEX_KEY, "");
         //try to choose that index
-        if(!_processor->setAudioStreamIndex(index)){
+        if(!_processor->setAudioStreamByName(name)){
             stringstream ss;
-            ss << "The previous stream with the index " << index << " is no longer available. Please choose a different one!";
+            ss << "The previous stream with the name " << name << " is no longer available. Please choose a different one!";
             Log::w(ss.str());
             //let the user set a new audio stream index
             userSetNewAudioIndex();
         }else{
-            Log::i("Loaded the last audio stream setting.");
+            stringstream ss;
+            ss << "Choosing last audio stream: '" << name << "'.";
+            Log::i(ss.str());
         }
     }
 }
@@ -49,7 +52,7 @@ void SignalController::chooseEffect() {
     }else{
         //get the last effect index from the config file
         int index = _config.getInt(EFFECT_INDEX_KEY, -1);
-        Effect *effect = Effects::newEffect(index);
+        Effect *effect = Effects::EFFECTS[index].second();
         //check if the effect was created
         if(effect == nullptr){
             stringstream ss;
@@ -59,7 +62,9 @@ void SignalController::chooseEffect() {
             userSetNewEffectIndex();
         }else{
             setEffect(effect);
-            Log::i("Loaded the last effect setting.");
+            stringstream ss;
+            ss << "Loaded last effect: '" << Effects::EFFECTS[index].first << "'.";
+            Log::i(ss.str());
         }
     }
 }
@@ -76,7 +81,7 @@ bool SignalController::startStreaming() {
     if(!_processor->start()){
         Log::w("The audio stream setting has been reset.");
         //if processing has failed, reset the audio stream setting
-        _config.setInt(AUDIO_STREAM_INDEX_KEY, -1);
+        _config.setString(AUDIO_STREAM_INDEX_KEY, "");
         return false;
     }
     return true;
@@ -89,7 +94,7 @@ void SignalController::stopStreaming() {
 
 void SignalController::userSetNewAudioIndex() {
     //print all available indices
-    _processor->printAudioStreams();
+    vector<string> streamNames = _processor->printAudioStreams(_blacklist);
     //then let the user choose
     int index = -1;
     while(true){
@@ -97,19 +102,21 @@ void SignalController::userSetNewAudioIndex() {
         cout << "> ";
         cin >> index;
         //try to assign the index
-        if(_processor->setAudioStreamIndex(index)){
+        if(_processor->setAudioStreamByName(streamNames[index])){
             break;
         }else{
             Log::w("Please enter a valid index! Try again:");
         }
     }
     //save the new index in the config
-    _config.setInt(AUDIO_STREAM_INDEX_KEY, index);
+    _config.setString(AUDIO_STREAM_INDEX_KEY, streamNames[index]);
 }
 
 void SignalController::userSetNewEffectIndex() {
     //print all effects
-    Effects::printEffects();
+    for(int i = 0; i < Effects::EFFECTS.size(); i++){
+        printEffect(i, Effects::EFFECTS[i].first);
+    }
     //then let the user choose
     int index = -1;
     Effect *effect;
@@ -117,9 +124,10 @@ void SignalController::userSetNewEffectIndex() {
         //get the index
         cout << "> ";
         cin >> index;
-        //try to assign the index
-        effect = Effects::newEffect(index);
-        if(effect != nullptr){
+        //check if the index is valid
+        if(index >= 0 && index < Effects::EFFECTS.size()){
+            //get an instance for the effect
+            effect = Effects::EFFECTS[index].second();
             break;
         }else{
             Log::w("Please enter a valid index! Try again:");

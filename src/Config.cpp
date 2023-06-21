@@ -73,4 +73,12 @@ bool Config::setInt(const string &key, const int &value) {
     return false;
 }
 
+bool Config::setString(const string &key, const string &value) {
+    data[key] = value;
+    //safe the file
+    std::ofstream file(_filePath);
+    file << data;
+    return false;
+}
+
 

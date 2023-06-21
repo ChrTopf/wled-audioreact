@@ -1,6 +1,12 @@
 {
-  "loglevel": 0,
-  "addressees":{
-    "0": "192.168.241.59"
+  "addressees": {
+    "0":"192.168.241.59"
+  },
+  "audioStream":"spotify",
+  "effectIndex":1,
+  "loglevel":1,
+  "streamBlacklist":{
+    "0":"upmix",
+    "1":"vdownmix"
   }
 }

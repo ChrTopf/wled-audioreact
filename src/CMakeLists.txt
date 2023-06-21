@@ -17,7 +17,7 @@ add_executable(wled-audioreact
         AudioProcessor.cpp
         SignalController.cpp
         Effect.h
-        effects/Effects.cpp
+        effects/Effects.h
         effects/RMSMaxVolumeEffect.cpp
         effects/AverageVolumeEffect.cpp
         effects/MaxVolumeEffect.cpp)
