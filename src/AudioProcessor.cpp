@@ -10,7 +10,7 @@ int audioCallback(const void* inputBuffer, void* outputBuffer, unsigned long fra
     //first, check if the last bunch of samples was already processed
     if(!AudioProcessor::sampleBuffer.empty()){
         //skip the next couple of samples
-        Log::w("Too slow, skipping samples");
+        Log::d("Too slow, skipping samples");
         return paContinue;
     }
     //cast the input buffer
@@ -104,7 +104,7 @@ bool AudioProcessor::start() {
     }else{
         //print the chosen stream
         stringstream ss;
-        ss << "Using the audio stream " << _audioStreamIndex << " (name: '" << Pa_GetDeviceInfo(_audioStreamIndex)->name << "') now.";
+        ss << "Using the audio stream '" << Pa_GetDeviceInfo(_audioStreamIndex)->name << "' (" << _audioStreamIndex << ") now.";
         Log::i(ss.str());
     }
     //configure the input device
@@ -171,6 +171,13 @@ void AudioProcessor::stop() {
         std::lock_guard<std::mutex> lock(interruptMutex);
         shouldRun = false;
     }
+    //notify the audio _processor about a new set of samples although there are none to prevent a deadlock
+    {
+        std::lock_guard<std::mutex> lock(mutex);
+        AudioProcessor::bufferReady = true;
+    }
+    AudioProcessor::conditionVariable.notify_one();
+    //then wait for the thread to finish
     processor.join();
     //stop the audio stream
     PaError error = Pa_StopStream(stream);
@@ -186,26 +193,56 @@ void AudioProcessor::stop() {
 
 //endregion
 
-void AudioProcessor::printAudioStreams() {
+vector<string> AudioProcessor::printAudioStreams(const vector<string> &blackList) {
     //get the connected devices
     int connectedDevices = Pa_GetDeviceCount();
     if(connectedDevices < 0){
         Log::e("Could not determine the amount of audio devices.");
     }
+    vector<string> streamNames;
+    streamNames.resize(connectedDevices);
     //iterate through all available devices
     for (int i = 0; i < connectedDevices; i++) {
         const PaDeviceInfo *deviceInfo = Pa_GetDeviceInfo(i);
-        if (deviceInfo->maxInputChannels > 0) {
+        //check if the stream is blacklisted
+        bool isBlacklisted = false;
+        for(int j = 0; j < blackList.size(); j++){
+            if(blackList[j].compare(deviceInfo->name) == 0){
+                isBlacklisted = true;
+                break;
+            }
+        }
+        //print the stream if possible
+        if (deviceInfo->maxInputChannels > 0 && !isBlacklisted) {
+            //save the name of that stream
+            streamNames[i] = deviceInfo->name;
             //print each stream with its index
             cout << "[" << i << "]" << " Name: '" << deviceInfo->name << "', Sample-Rate: " << deviceInfo->defaultSampleRate << endl;
         }
     }
+    return streamNames;
 }
 
-bool AudioProcessor::setAudioStreamIndex(int index) {
-    if(index < 0 || (index + 1) > Pa_GetDeviceCount()){
+bool AudioProcessor::setAudioStreamByName(string name) {
+    //get the connected devices
+    int connectedDevices = Pa_GetDeviceCount();
+    if(connectedDevices < 0){
+        Log::e("Could not determine the amount of audio devices.");
+    }
+    int index = -1;
+    //iterate through all available devices to find the right one
+    for (int i = 0; i < connectedDevices; i++) {
+        const PaDeviceInfo *deviceInfo = Pa_GetDeviceInfo(i);
+        if (deviceInfo->maxInputChannels > 0 && name.compare(deviceInfo->name) == 0) {
+            //save the name of that stream
+            index = i;
+            break;
+        }
+    }
+    //check if the stream was not found
+    if(index < 0){
         stringstream ss;
-        ss << "The audio stream with index " << index << " does not exist.";
+        ss << "The audio stream with name '" << name << "' does not exist.";
         Log::e(ss.str());
         return false;
     }

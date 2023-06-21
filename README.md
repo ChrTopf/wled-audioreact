@@ -34,12 +34,13 @@ sudo apt-get install portaudio19-dev
 
 (The json parser library will automatically be downloaded and used.)
 
+Note: When implementing a new Effect, do not forget to add it in the Effects.h!
+
 ## Version History
 
-| Version | Type     | Date       | Changes                                        |
-| ------- | -------- | ---------- | ---------------------------------------------- |
-| 0.1     | snapshot | 09.06.2023 | implemented basic structure; added test effect |
-| 0.2     | snapshot | 12.06.2023 | implemented first test effect                  |
-| 0.3     | snapshot | 18.06.2023 | first usable application; 3 effects included   |
-
-When implementing a new Effect, do not forget to add it in the Effects.cpp! 
+| Version | Type     | Date       | Changes                                                                            |
+| ------- | -------- | ---------- | ---------------------------------------------------------------------------------- |
+| 0.1     | snapshot | 09.06.2023 | implemented basic structure; added test effect                                     |
+| 0.2     | snapshot | 12.06.2023 | implemented first test effect                                                      |
+| 0.3     | snapshot | 18.06.2023 | first usable application; 3 effects included                                       |
+| 0.4     | snapshot | 21.06.2023 | fixed wrong audio stream issue; fixed audio stream setting not deleted after crash |

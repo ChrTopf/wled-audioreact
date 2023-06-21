@@ -23,6 +23,7 @@ public:
     bool keyExists(const std::string &key);
     bool isEmpty(const std::string &key);
     bool setInt(const std::string &key, const int &value);
+    bool setString(const std::string &key, const std::string &value);
 };
 
 

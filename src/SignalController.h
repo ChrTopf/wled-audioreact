@@ -16,7 +16,11 @@ private:
     NetworkHandler _network;
     AudioProcessor *_processor;
     Config _config;
+    vector<string> _blacklist;
     void setEffect(Effect *effect);
+    inline static void printEffect(const int index, const string &text){
+        cout << "[" << index << "]" << " " << text << endl;
+    }
 public:
     SignalController(const std::vector<std::string> &addressees, const Config &config);
     ~SignalController();

@@ -1,15 +1,25 @@
 #include <iostream>
 #include <chrono>
-#include <thread>
+#include <signal.h>
 #include "Config.h"
 #include "Log.h"
 #include "SignalController.h"
-#include "effects/RMSMaxVolumeEffect.h"
 
-#define VERSION 0.1
+#define VERSION 0.4
 #define CONFIG_FILE "../settings.json"
+#define AUDIO_STREAM_INDEX_KEY "audioStream"
 
 using namespace std;
+
+void onSegfault(int signal, siginfo_t *si, void *arg)
+{
+    stringstream ss;
+    ss << "Caught segfault at address " << si->si_addr << ". Deleted audio stream setting." << endl;
+    Log::e(ss.str());
+    Config config(CONFIG_FILE);
+    config.setString(AUDIO_STREAM_INDEX_KEY, "");
+    exit(1);
+}
 
 int main() {
     std::srand( time(NULL));
@@ -40,6 +50,14 @@ int main() {
         ss << "Streaming to address '" << adr[i] << "'";
         Log::i(ss.str());
     }
+
+    //catch segmentation fault
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(struct sigaction));
+    sigemptyset(&sa.sa_mask);
+    sa.sa_sigaction = onSegfault;
+    sa.sa_flags   = SA_SIGINFO;
+    sigaction(SIGSEGV, &sa, NULL);
 
     //create the signal controller
     SignalController controller(adr, config);
