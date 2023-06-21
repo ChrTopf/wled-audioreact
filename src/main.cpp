@@ -6,7 +6,7 @@
 #include "SignalController.h"
 #include "effects/RMSMaxVolumeEffect.h"
 
-#define VERSION 0.1
+#define VERSION 0.4
 #define CONFIG_FILE "../settings.json"
 
 using namespace std;
