@@ -24,6 +24,8 @@ public:
     bool isEmpty(const std::string &key);
     bool setInt(const std::string &key, const int &value);
     bool setString(const std::string &key, const std::string &value);
+    double getDouble(const std::string &key, const double &defaultVal);
+    bool setDouble(const std::string &key, const double &value);
 };
 
 

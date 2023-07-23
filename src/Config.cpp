@@ -81,4 +81,16 @@ bool Config::setString(const string &key, const string &value) {
     return false;
 }
 
+double Config::getDouble(const string &key, const double &defaultVal) {
+    return data.value(key, defaultVal);
+}
+
+bool Config::setDouble(const std::string &key, const double &value) {
+    //set the value
+    data[key] = value;
+    //safe the file
+    std::ofstream file(_filePath);
+    file << data;
+    return false;
+}
 
