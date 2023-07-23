@@ -14,6 +14,7 @@ private:
     float _secondLastVal = 0.0;
     float _trueRMSPeak = 0.0;
 public:
+    RMSMaxVolumeEffect(): Effect(){}
     void onData(const std::vector<float> &data) override;
 };
 

@@ -4,13 +4,17 @@
 #include "NetworkHandler.h"
 #include <sstream>
 
-NetworkHandler::NetworkHandler(const std::vector<std::string> &addressees) : _addressees(addressees){
+NetworkHandler::NetworkHandler(const std::vector<std::string> &addressees, int ledAmount) : _addressees(addressees), _ledAmount(ledAmount){
     _sockets = std::vector<WLEDSocket>();
+}
+
+NetworkHandler::~NetworkHandler() {
+    _sockets.clear();
 }
 
 bool NetworkHandler::initializeAll() {
     for(int i = 0; i < _addressees.size(); i++){
-        WLEDSocket socket(_addressees[i]);
+        WLEDSocket socket(_addressees[i], _ledAmount);
         //try to create the socket
         if(!socket.initialize()){
             stringstream ss;
@@ -39,4 +43,5 @@ void NetworkHandler::closeAll() {
     for(int i = 0; i < _sockets.size(); i++){
         _sockets[i].close();
     }
+    _sockets.clear();
 }

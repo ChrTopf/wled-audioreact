@@ -51,7 +51,7 @@ void MaxVolumeEffect::onData(const vector<float> &data) {
             _maxVal = currentMax;
         }
         //calculate the next height
-        height = (int) (144 * (currentMax / _maxVal)); // LED_COUNT
+        height = (int) (LED_AMOUNT * (currentMax / _maxVal)); // LED_COUNT
         //color speed factor
         cSpeed = (currentMax / _maxVal) * SPEED_MULTIPLIER;
     }
@@ -71,17 +71,17 @@ void MaxVolumeEffect::onData(const vector<float> &data) {
     }
     //calculate the new height
     for(int i = 0; i < height; i++){
-        red[i] = (char) round(_r);
-        green[i] = (char) round(_g);
-        blue[i] = (char) round(_b);
+        _red[i] = (char) round(_r);
+        _green[i] = (char) round(_g);
+        _blue[i] = (char) round(_b);
     }
     //fill black space
-    for(int i = height; i < 144; i++){
-        red[i] = 0;
-        green[i] = 0;
-        blue[i] = 0;
+    for(int i = height; i < LED_AMOUNT; i++){
+        _red[i] = 0;
+        _green[i] = 0;
+        _blue[i] = 0;
     }
 
     //now send the data
-    _network->sendData(red, green, blue);
+    _network->sendData(_red, _green, _blue);
 }

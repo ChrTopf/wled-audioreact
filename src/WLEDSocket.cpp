@@ -4,8 +4,14 @@
 
 #include "WLEDSocket.h"
 
-WLEDSocket::WLEDSocket(const std::string &address) {
+WLEDSocket::WLEDSocket(const std::string &address, const int ledAmount) {
     this->address = address;
+    dataLength = 2+ledAmount*3;
+    data = new char[dataLength];
+}
+
+WLEDSocket::~WLEDSocket() {
+    delete[] data;
 }
 
 bool WLEDSocket::initialize() {
@@ -32,7 +38,7 @@ bool WLEDSocket::sendData(const char *red, const char *green, const char *blue) 
     data[1] = 0x02;
     //parse the rgb values
     int counter = 0;
-    for(int i = 2; i < sizeof(data); i += 3){
+    for(int i = 2; i < dataLength; i += 3){
         data[i] = red[counter];
         data[i + 1] = green[counter];
         data[i + 2] = blue[counter];
@@ -48,7 +54,7 @@ bool WLEDSocket::sendRandomData() {
     //set the number of seconds to wait for more packets before returning to normal mode
     data[1] = 0x02;
     //parse the rgb values
-    for(int i = 2; i < sizeof(data); i += 3){
+    for(int i = 2; i < dataLength; i += 3){
         data[i] = rand() % 255;
         data[i + 1] = rand() % 255;
         data[i + 2] = rand() % 255;
@@ -63,7 +69,7 @@ bool WLEDSocket::sendMonoData(const int red, const int green, const int blue) {
     //set the number of seconds to wait for more packets before returning to normal mode
     data[1] = 0x02;
     //parse the rgb values
-    for(int i = 2; i < sizeof(data); i += 3){
+    for(int i = 2; i < dataLength; i += 3){
         data[i] = red;
         data[i + 1] = green;
         data[i + 2] = blue;
@@ -78,7 +84,7 @@ void WLEDSocket::close() {
 
 bool WLEDSocket::send() {
     //send the data
-    ssize_t bytesSent = sendto(sock, data, sizeof(data), 0, (struct sockaddr*)&destination, sizeof(destination));
+    ssize_t bytesSent = sendto(sock, data, dataLength, 0, (struct sockaddr*)&destination, sizeof(destination));
     if (bytesSent == -1) {
         Log::e("Could not send data to '" + address + "'");
         return false;

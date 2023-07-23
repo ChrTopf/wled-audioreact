@@ -10,7 +10,6 @@
 #include "WLEDSocket.h"
 #include "Config.h"
 
-
 class SignalController {
 private:
     NetworkHandler _network;
@@ -22,7 +21,7 @@ private:
         cout << "[" << index << "]" << " " << text << endl;
     }
 public:
-    SignalController(const std::vector<std::string> &addressees, const Config &config);
+    SignalController(const std::vector<std::string> &addressees, int ledAmount, Config &config);
     ~SignalController();
     void chooseAudioStream();
     void chooseEffect();

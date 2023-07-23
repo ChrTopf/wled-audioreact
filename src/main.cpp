@@ -8,6 +8,7 @@
 #define VERSION 0.4
 #define CONFIG_FILE "../settings.json"
 #define AUDIO_STREAM_INDEX_KEY "audioStream"
+#define LED_AMOUNT_KEY "ledAmount"
 
 using namespace std;
 
@@ -44,12 +45,15 @@ int main() {
     //do the startup sequence
     Log::i("Intializing...");
     //get all addressees
-    auto adr = config.getValues("addressees");
-    for(int i = 0; i < adr.size(); i++){
+    auto addresses = config.getValues("addressees");
+    for(int i = 0; i < addresses.size(); i++){
         stringstream ss;
-        ss << "Streaming to address '" << adr[i] << "'";
+        ss << "Streaming to address '" << addresses[i] << "'";
         Log::i(ss.str());
     }
+    //get the length of the LED stripe
+    int ledAmount = config.getInt(LED_AMOUNT_KEY, 144);
+    EffectParameters::LED_AMOUNT = ledAmount;
 
     //catch segmentation fault
     struct sigaction sa;
@@ -60,7 +64,7 @@ int main() {
     sigaction(SIGSEGV, &sa, NULL);
 
     //create the signal controller
-    SignalController controller(adr, config);
+    SignalController controller(addresses, ledAmount, config);
     //let the user choose the audio stream
     controller.chooseAudioStream();
     //choose an effect

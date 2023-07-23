@@ -13,6 +13,7 @@ private:
     float _lastVal = 0.0;
     float _secondLastVal = 0.0;
 public:
+    AverageVolumeEffect(): Effect(){}
     void onData(const std::vector<float> &data) override;
 };
 

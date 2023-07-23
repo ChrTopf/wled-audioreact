@@ -8,7 +8,7 @@
 #define SAMPLE_RATE_KEY "sampleRate"
 #define EFFECT_INDEX_KEY "effectIndex"
 
-SignalController::SignalController(const std::vector<std::string> &addressees, const Config &config) : _network(NetworkHandler(addressees)),
+SignalController::SignalController(const std::vector<std::string> &addressees, const int ledAmount, Config &config) : _network(NetworkHandler(addressees, ledAmount)),
                                                                                                        _config(config){
     _processor = AudioProcessor::getInstance();
     _blacklist = _config.getValues("streamBlacklist");
@@ -95,7 +95,7 @@ void SignalController::stopStreaming() {
 }
 
 void SignalController::userSetNewAudioIndex() {
-    double sampleRate = 0;
+    double sampleRate;
     //print all available indices
     vector<string> streamNames = _processor->printAudioStreams(_blacklist);
     //then let the user choose

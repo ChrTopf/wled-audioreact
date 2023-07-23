@@ -18,14 +18,16 @@ private:
     std::string address;
     int sock;
     sockaddr_in destination;
-    char data[2+144*3] = {0};
+    char *data;
+    int dataLength;
     bool send();
 public:
-    WLEDSocket(const std::string &address);
+    WLEDSocket(const std::string &address, int ledAmount);
+    ~WLEDSocket();
     bool initialize();
-    bool sendData(const char red[144], const char green[144], const char blue[144]);
+    bool sendData(const char *red, const char *green, const char *blue);
     bool sendRandomData();
-    bool sendMonoData(const int red, const int green, const int blue);
+    bool sendMonoData(int red, int green, int blue);
     void close();
 };
 
