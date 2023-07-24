@@ -12,13 +12,13 @@
 class NetworkHandler {
 private:
     const std::vector<std::string> &_addressees;
-    std::vector<WLEDSocket> _sockets;
+    std::vector<WLEDSocket*> _sockets;
     const int _ledAmount;
 public:
     NetworkHandler(const std::vector<std::string> &addressees, int ledAmount);
     ~NetworkHandler();
     bool initializeAll();
-    void sendData(const char *red, const char *green, const char *blue);
+    void sendData(const char8_t *red, const char8_t *green, const char8_t *blue);
     void closeAll();
 };
 

@@ -80,12 +80,17 @@ bool SignalController::startStreaming() {
     //start the networking
     _network.initializeAll();
     //try to start processing
-    if(!_processor->start()){
+    bool success = _processor->start();
+    sleep(1); //sleep a bit to wait for a potential segfault
+    if(!success){
         Log::w("The audio stream setting has been reset.");
         //if processing has failed, reset the audio stream setting
         _config.setString(AUDIO_STREAM_INDEX_KEY, "");
+        _config.saveConfig();
         return false;
     }
+    //save the new settings here
+    _config.saveConfig();
     return true;
 }
 
@@ -159,6 +164,7 @@ void SignalController::userSetNewEffectIndex() {
     }
     //safe index in config
     _config.setInt(EFFECT_INDEX_KEY, index);
+    _config.saveConfig();
     //set the effect
     setEffect(effect);
 }

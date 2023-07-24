@@ -10,14 +10,14 @@
 
 class Effect {
 protected:
-    char *_red, *_green, *_blue;
+    char8_t *_red, *_green, *_blue;
     const int LED_AMOUNT;
     NetworkHandler *_network = nullptr;
 public:
     inline Effect(): LED_AMOUNT(EffectParameters::LED_AMOUNT){
-        _red = new char[LED_AMOUNT];
-        _green = new char[LED_AMOUNT];
-        _blue = new char[LED_AMOUNT];
+        _red = new char8_t[LED_AMOUNT];
+        _green = new char8_t[LED_AMOUNT];
+        _blue = new char8_t[LED_AMOUNT];
     }
     inline virtual ~Effect(){
         delete[] _red;

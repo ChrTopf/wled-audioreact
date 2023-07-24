@@ -23,14 +23,15 @@ private:
     std::string address;
     int sock;
     sockaddr_in destination;
-    char *data;
+    char8_t *data;
     int dataLength;
     bool send();
+    WLEDSocket(const WLEDSocket &original){};
 public:
     WLEDSocket(const std::string &address, int ledAmount);
     ~WLEDSocket();
     bool initialize();
-    bool sendData(const char *red, const char *green, const char *blue);
+    bool sendData(const char8_t *red, const char8_t *green, const char8_t *blue);
     bool sendRandomData();
     bool sendMonoData(int red, int green, int blue);
     void close();

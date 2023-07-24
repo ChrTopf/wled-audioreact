@@ -1,6 +1,5 @@
 #include <iostream>
 #include <chrono>
-#include <signal.h>
 #include "Config.h"
 #include "Log.h"
 #include "SignalController.h"
@@ -11,16 +10,6 @@
 #define LED_AMOUNT_KEY "ledAmount"
 
 using namespace std;
-
-void onSegfault(int signal, siginfo_t *si, void *arg)
-{
-    stringstream ss;
-    ss << "Caught segfault at address " << si->si_addr << ". Deleted audio stream setting." << endl;
-    Log::e(ss.str());
-    Config config(CONFIG_FILE);
-    config.setString(AUDIO_STREAM_INDEX_KEY, "");
-    exit(1);
-}
 
 int main() {
     std::srand( time(NULL));
@@ -57,14 +46,6 @@ int main() {
         ledAmount *= -1;
     }
     EffectParameters::LED_AMOUNT = ledAmount;
-
-    //catch segmentation fault
-    struct sigaction sa;
-    memset(&sa, 0, sizeof(struct sigaction));
-    sigemptyset(&sa.sa_mask);
-    sa.sa_sigaction = onSegfault;
-    sa.sa_flags   = SA_SIGINFO;
-    sigaction(SIGSEGV, &sa, NULL);
 
     //create the signal controller
     SignalController controller(addresses, ledAmount, config);

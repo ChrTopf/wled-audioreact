@@ -7,7 +7,7 @@
 WLEDSocket::WLEDSocket(const std::string &address, const int ledAmount) {
     this->address = address;
     dataLength = 2+ledAmount*3;
-    data = new char[dataLength];
+    data = new char8_t [dataLength];
 }
 
 WLEDSocket::~WLEDSocket() {
@@ -31,7 +31,7 @@ bool WLEDSocket::initialize() {
     return true;
 }
 
-bool WLEDSocket::sendData(const char *red, const char *green, const char *blue) {
+bool WLEDSocket::sendData(const char8_t *red, const char8_t *green, const char8_t *blue) {
     //set the protocol to DRGB
     data[0] = 0x02;
     //set the number of seconds to wait for more packets before returning to normal mode
@@ -86,7 +86,7 @@ bool WLEDSocket::send() {
     //send the data
     ssize_t bytesSent = sendto(sock, data, dataLength, 0, (struct sockaddr*)&destination, sizeof(destination));
     if (bytesSent == -1) {
-        Log::e("Could not send data to '" + address + "'");
+        Log::e("Could not send data to '" + address + "'. Check your network connection!");
         return false;
     }
     return true;
