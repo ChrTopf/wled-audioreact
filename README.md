@@ -1,10 +1,16 @@
 # wled-audioreact
 
-This project provides an application that reads an audio stream on the computer where it is executed and then sends commands to one or more linear [WLED](https://kno.wled.ge/) driven LED strips to change their color based on the music currently playing using one of multiple effects to choose from.
+This application generates cool light effects for your [WLED](https://kno.wled.ge/) driven strips based on the music currently playing on your computer. You can choose from multiple effects and audio sources to add another dimension to your music listening experience.
 
 ## !Warning!
 
 This application can potentially trigger seizures for people with photosensitive epilepsy.
+
+## License
+
+This software is free for non commercial use only. You are prohibited to copy, modify or sell this software without permission.
+
+For further licensing information, please have a look at LICENSE.txt
 
 ## Requirements
 
@@ -44,10 +50,10 @@ The configuration file `settings.json` contains the following entries:
 
 ### Dependencies
 
-| Name                                       | Version    | Installation                                          |
-| ------------------------------------------ | ---------- | ----------------------------------------------------- |
-| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Already done in CMakeLists                            |
-| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux:<br/>```sudo apt-get install portaudio19-dev``` |
+| Name                                       | Version    | Installation                                                                                                        |
+| ------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Already done in CMakeLists                                                                                          |
+| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux:<br/>`sudo apt-get install portaudio19-dev`<br/>Windows:<br/>Build the .dll and include it in the CMakeLists. |
 
 ## Version History
 
@@ -58,9 +64,3 @@ The configuration file `settings.json` contains the following entries:
 | 0.3     | snapshot | 18.06.2023 | first usable application; 3 effects included                                       |
 | 0.4     | snapshot | 21.06.2023 | fixed wrong audio stream issue; fixed audio stream setting not deleted after crash |
 | 0.5     | snapshot | 23.06.2023 | implemented sample rate and led amount setting                                     |
-
-## License
-
-You can use this application for free. You are prohibited to copy, modify or sell this software.
-
-For further licensing information, please have a look at LICENSE.txt
