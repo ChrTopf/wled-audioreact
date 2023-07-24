@@ -6,7 +6,7 @@
 #include <ctime>
 
 bool Log::isColor = false;
-LOG_LEVEL Log::logLevel = INFO;
+LOG_LEVEL Log::logLevel = LEVEL_INFO;
 
 void Log::out(const LOG_LEVEL level, const string& msg) {
     //check if the message of that level needs to be logged

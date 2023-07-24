@@ -16,16 +16,16 @@
 using namespace std;
 
 enum LOG_LEVEL{
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR
+    LEVEL_DEBUG,
+    LEVEL_INFO,
+    LEVEL_WARNING,
+    LEVEL_ERROR
 };
 
 class Log {
 private:
     //a list of labels ordered by their log level (0 to 3)
-    inline static const string LABEL[] = {"DBUG", "INFO", "WARN", "FATA"};
+    inline static const string LABEL[] = {"DBUG", "LEVEL_INFO", "WARN", "FATA"};
     //a list of colors ordered by their log level matching the labels (0 to 3)
     inline static const string COLOR[] = {ANSI_PURPLE, ANSI_GREEN, ANSI_YELLOW, ANSI_RED};
     //the method for printing every log message
@@ -40,8 +40,8 @@ public:
     static void enableColor(bool enabled);
 
     /**
-     * Set the minimum level of all log messages. If you set it to INFO no debug messages are going to be logged.
-     * Default: INFO
+     * Set the minimum level of all log messages. If you set it to LEVEL_INFO no debug messages are going to be logged.
+     * Default: LEVEL_INFO
      * @param level The minimum log level to be logged.
      */
     static void setLogLevel(LOG_LEVEL level);
@@ -57,45 +57,45 @@ public:
      * Log a debug message.
      * @param msg The message.
      */
-    inline static void d(const string& msg){ out(DEBUG, msg);}
+    inline static void d(const string& msg){ out(LEVEL_DEBUG, msg);}
     /**
      * Log a debug message.
      * @param msg The message.
      */
-    inline static void D(const string& msg){out(DEBUG, msg);}
+    inline static void D(const string& msg){out(LEVEL_DEBUG, msg);}
 
     /**
      * Log an info message.
      * @param msg The message.
      */
-    inline static void i(const string& msg){ out(INFO, msg);}
+    inline static void i(const string& msg){ out(LEVEL_INFO, msg);}
     /**
      * Log an info message.
      * @param msg The message.
      */
-    inline static void I(const string& msg){out(INFO, msg);}
+    inline static void I(const string& msg){out(LEVEL_INFO, msg);}
 
     /**
      * Log a warning message.
      * @param msg The message.
      */
-    inline static void w(const string& msg){out(WARNING, msg);}
+    inline static void w(const string& msg){out(LEVEL_WARNING, msg);}
     /**
      * Log a warning message.
      * @param msg The message.
      */
-    inline static void W(const string& msg){out(WARNING, msg);}
+    inline static void W(const string& msg){out(LEVEL_WARNING, msg);}
 
     /**
      * Log an error message.
      * @param msg The message.
      */
-    inline static void e(const string& msg){out(ERROR, msg);}
+    inline static void e(const string& msg){out(LEVEL_ERROR, msg);}
     /**
      * Log an error message.
      * @param msg The message.
      */
-    inline static void E(const string& msg){out(ERROR, msg);}
+    inline static void E(const string& msg){out(LEVEL_ERROR, msg);}
 };
 
 

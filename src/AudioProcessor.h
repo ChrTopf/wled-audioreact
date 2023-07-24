@@ -8,8 +8,12 @@
 #include <string>
 #include <thread>
 #include <mutex>
-#include <condition_variable>
+#if __has_include("portaudio.h")
 #include "portaudio.h"
+#else
+#include "C:/Users/ChrTopf/Documents/repos/portaudio/include/portaudio.h"
+#endif
+#include <condition_variable>
 #include "Effect.h"
 
 #define BUFFER_SIZE 1470 //882 for 50fps, 1470 for 30fps

@@ -6,8 +6,13 @@
 #define WLED_AUDIOREACT_WLEDSOCKET_H
 #include <string>
 #include <cstring>
+#if __has_include(<sys/socket.h>)
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#else
+#include <winsock2.h>
+#include <sys/types.h>
+#endif
 #include <unistd.h>
 #include "Log.h"
 
