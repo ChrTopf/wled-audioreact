@@ -5,7 +5,7 @@
 #include "Log.h"
 #include "SignalController.h"
 
-#define VERSION 0.4
+#define VERSION 0.5
 #define CONFIG_FILE "../settings.json"
 #define AUDIO_STREAM_INDEX_KEY "audioStream"
 #define LED_AMOUNT_KEY "ledAmount"
@@ -53,6 +53,9 @@ int main() {
     }
     //get the length of the LED stripe
     int ledAmount = config.getInt(LED_AMOUNT_KEY, 144);
+    if(ledAmount < 0){
+        ledAmount *= -1;
+    }
     EffectParameters::LED_AMOUNT = ledAmount;
 
     //catch segmentation fault
