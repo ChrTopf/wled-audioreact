@@ -12,22 +12,33 @@ WLEDSocket::WLEDSocket(const std::string &address, const int ledAmount) {
 
 WLEDSocket::~WLEDSocket() {
     delete[] data;
+    delete sock;
+    delete ioContext;
 }
 
 bool WLEDSocket::initialize() {
-    //try to create the socket
-    this->sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock == -1) {
-        Log::e("Could not create the socket to '" + address + "'.");
+    try{
+        //prepare the socket
+        ioContext = new asio::io_context();
+        sock = new asio::ip::udp::socket(*ioContext, asio::ip::udp::v4());
+        //resolve the destination address
+        asio::ip::udp::resolver resolver(*ioContext);
+        asio::ip::udp::resolver::results_type endpoints = resolver.resolve(asio::ip::udp::v4(), address, WLED_PORT);
+        //check if the address was correct
+        if(endpoints.empty()){
+            stringstream ss;
+            ss << "The IPv4 destination address '" << address << "' is invalid.";
+            Log::e(ss.str());
+            return false;
+        }
+        //get the first resolved host
+        destination = *endpoints.begin();
+    }catch (std::exception &e){
+        stringstream ss;
+        ss << "Socket could not be initialized. Error: " << e.what();
+        Log::e(ss.str());
         return false;
     }
-
-    //create the structure for the destination address
-    std::memset(&destination, 0, sizeof(destination));
-    destination.sin_family = AF_INET;
-    destination.sin_addr.s_addr = inet_addr(address.c_str());
-    destination.sin_port = htons(WLED_PORT);
-
     return true;
 }
 
@@ -43,21 +54,6 @@ bool WLEDSocket::sendData(const char8_t *red, const char8_t *green, const char8_
         data[i + 1] = green[counter];
         data[i + 2] = blue[counter];
         counter++;
-    }
-    //send the data
-    return send();
-}
-
-bool WLEDSocket::sendRandomData() {
-    //set the protocol to DRGB
-    data[0] = 0x02;
-    //set the number of seconds to wait for more packets before returning to normal mode
-    data[1] = 0x02;
-    //parse the rgb values
-    for(int i = 2; i < dataLength; i += 3){
-        data[i] = rand() % 255;
-        data[i + 1] = rand() % 255;
-        data[i + 2] = rand() % 255;
     }
     //send the data
     return send();
@@ -79,12 +75,12 @@ bool WLEDSocket::sendMonoData(const int red, const int green, const int blue) {
 }
 
 void WLEDSocket::close() {
-    ::close(sock);
+    sock->close();
 }
 
 bool WLEDSocket::send() {
     //send the data
-    ssize_t bytesSent = sendto(sock, data, dataLength, 0, (struct sockaddr*)&destination, sizeof(destination));
+    std::size_t bytesSent = sock->send_to(asio::buffer(data, dataLength), destination);
     if (bytesSent == -1) {
         Log::e("Could not send data to '" + address + "'. Check your network connection!");
         return false;

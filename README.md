@@ -10,6 +10,8 @@ This application can potentially trigger seizures for people with photosensitive
 
 This software is free for non commercial use only. You are prohibited to copy, modify or sell this software without permission.
 
+By using this software you automatically agree to its license.
+
 For further licensing information, please have a look at LICENSE.txt
 
 ## Requirements
@@ -44,16 +46,19 @@ The configuration file `settings.json` contains the following entries:
 
 ## Developer Notes
 
+- The recommended IDE for development is CLion.
+
 - In Order to build the application you need to install all necessary dependencies first.
 
 - When implementing a new Effect, do not forget to add it in the Effects.h!
 
 ### Dependencies
 
-| Name                                       | Version    | Installation                                                                                                        |
-| ------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------- |
-| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Already done in CMakeLists                                                                                          |
-| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux:<br/>`sudo apt-get install portaudio19-dev`<br/>Windows:<br/>Build the .dll and include it in the CMakeLists. |
+| Name                                       | Version    | Installation                                                                                                    |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Already done in CMakeLists                                                                                      |
+| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux:<br/>`sudo apt install portaudio19-dev`<br/>Windows:<br/>Build the .dll and include it in the CMakeLists. |
+| [ASIO](https://think-async.com/Asio/)      | >= v1.28.0 | Linux:<br/>`sudo apt install libasio-dev`                                                                       |
 
 ## Version History
 
