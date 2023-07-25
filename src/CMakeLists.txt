@@ -4,17 +4,6 @@ include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 23)
 
-#use new cmake policy for downloading sources
-if(POLICY CMP0135)
-    cmake_policy(SET CMP0135 NEW)
-    set(CMAKE_POLICY_DEFAULT_CMP0135 NEW)
-endif()
-set(DOWNLOAD_EXTRACT_TIMESTAMP true)
-
-FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
-FetchContent_MakeAvailable(json)
-include_directories(/usr/include)
-
 add_executable(wled-audioreact
         main.cpp
         Log.cpp
@@ -30,17 +19,15 @@ add_executable(wled-audioreact
         effects/AverageVolumeEffect.cpp
         effects/MaxVolumeEffect.cpp)
 
-target_link_libraries(wled-audioreact PRIVATE nlohmann_json::nlohmann_json)
+target_include_directories(wled-audioreact PRIVATE ../dependencies/)
+target_include_directories(wled-audioreact PRIVATE ../dependencies/asio/)
 
 
 # Variante für Windows
 if(WIN32)
     add_definitions(-DWINDOWS_BUILD)
-    #port audio
-    target_link_libraries(wled-audioreact PRIVATE C:/Users/ChrTopf/Documents/repos/portaudio/cmake-build-debug/libportaudio.dll)
-    #asio
     target_link_libraries(wled-audioreact PRIVATE ws2_32)
-    target_include_directories(wled-audioreact PRIVATE C:/Users/ChrTopf/Documents/repos/asio/include)
+    target_link_libraries(wled-audioreact PRIVATE ${PROJECT_SOURCE_DIR}/../dependencies/portaudio_windows_x64/portaudio_x64.dll)
 endif()
 
 # Variante für Debian
