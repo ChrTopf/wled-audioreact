@@ -81,7 +81,7 @@ bool SignalController::startStreaming() {
     _network.initializeAll();
     //try to start processing
     bool success = _processor->start();
-    sleep(1); //sleep a bit to wait for a potential segfault
+    std::this_thread::sleep_for(1000ms); //sleep a bit to wait for a potential segfault
     if(!success){
         Log::w("The audio stream setting has been reset.");
         //if processing has failed, reset the audio stream setting

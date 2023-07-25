@@ -36,7 +36,11 @@ target_link_libraries(wled-audioreact PRIVATE nlohmann_json::nlohmann_json)
 # Variante für Windows
 if(WIN32)
     add_definitions(-DWINDOWS_BUILD)
+    #port audio
     target_link_libraries(wled-audioreact PRIVATE C:/Users/ChrTopf/Documents/repos/portaudio/cmake-build-debug/libportaudio.dll)
+    #asio
+    target_link_libraries(wled-audioreact PRIVATE ws2_32)
+    target_include_directories(wled-audioreact PRIVATE C:/Users/ChrTopf/Documents/repos/asio/include)
 endif()
 
 # Variante für Debian
