@@ -64,21 +64,25 @@ bool Config::isEmpty(const string &key) {
     return data.at(key).empty();
 }
 
-bool Config::setInt(const string &key, const int &value) {
-    //set the value
+void Config::setInt(const string &key, const int &value) {
     data[key] = value;
-    //safe the file
-    std::ofstream file(_filePath);
-    file << data;
-    return false;
 }
 
-bool Config::setString(const string &key, const string &value) {
+void Config::setString(const string &key, const string &value) {
     data[key] = value;
-    //safe the file
-    std::ofstream file(_filePath);
-    file << data;
-    return false;
 }
 
+double Config::getDouble(const string &key, const double &defaultVal) {
+    return data.value(key, defaultVal);
+}
+
+void Config::setDouble(const std::string &key, const double &value) {
+    data[key] = value;
+}
+
+bool Config::saveConfig() {
+    std::ofstream file(_filePath);
+    file << data;
+    return true;
+}
 

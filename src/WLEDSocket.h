@@ -5,27 +5,28 @@
 #ifndef WLED_AUDIOREACT_WLEDSOCKET_H
 #define WLED_AUDIOREACT_WLEDSOCKET_H
 #include <string>
-#include <cstring>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+#include <asio.hpp>
 #include "Log.h"
 
-#define WLED_PORT 21324
+#define WLED_PORT "21324"
 
 class WLEDSocket {
 private:
+    asio::io_context *ioContext;
+    asio::ip::udp::socket *sock;
+    asio::ip::basic_endpoint<asio::ip::udp> destination;
     std::string address;
-    int sock;
-    sockaddr_in destination;
-    char data[2+144*3] = {0};
+
+    char8_t *data;
+    int dataLength;
     bool send();
+    WLEDSocket(const WLEDSocket &original){};
 public:
-    WLEDSocket(const std::string &address);
+    WLEDSocket(const std::string &address, int ledAmount);
+    ~WLEDSocket();
     bool initialize();
-    bool sendData(const char red[144], const char green[144], const char blue[144]);
-    bool sendRandomData();
-    bool sendMonoData(const int red, const int green, const int blue);
+    bool sendData(const char8_t *red, const char8_t *green, const char8_t *blue);
+    bool sendMonoData(int red, int green, int blue);
     void close();
 };
 

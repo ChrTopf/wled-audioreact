@@ -8,11 +8,14 @@
 #include <string>
 #include <thread>
 #include <mutex>
-#include <condition_variable>
+#if __has_include("portaudio.h")
 #include "portaudio.h"
+#else
+#include "C:/Users/ChrTopf/Documents/repos/portaudio/include/portaudio.h"
+#endif
+#include <condition_variable>
 #include "Effect.h"
 
-#define SAMPLE_RATE 44100
 #define BUFFER_SIZE 1470 //882 for 50fps, 1470 for 30fps
 
 class AudioProcessor{
@@ -23,6 +26,7 @@ private:
     //audio members
     PaStream* stream;
     int _audioStreamIndex;
+    double _sampleRate;
     //threading
     std::thread processor;
     std::mutex interruptMutex;
@@ -55,7 +59,18 @@ public:
     void stop();
     //audio stream selection
     vector<string> printAudioStreams(const vector<string> &blackList);
-    bool setAudioStreamByName(string name);
+    /**
+     * Set the current audio stream as source using its name.
+     * @param name The name of the stream to be processed.
+     * @return returns the default sample rate of that stream or 0 if it could not be configured.
+     */
+    double setAudioStreamByName(string name);
+    /**
+     * Set the sample rate for the current audio stream to be recorded at. It needs to lie between 60Hz and 400kHz.
+     * @param sampleRate The sample rate to be chosen.
+     * @return returns true if the sample rate could be set and false otherwise.
+     */
+    bool setSampleRate(double sampleRate);
 };
 
 

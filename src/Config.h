@@ -22,8 +22,11 @@ public:
     std::vector<std::string> getValues(const std::string &key);
     bool keyExists(const std::string &key);
     bool isEmpty(const std::string &key);
-    bool setInt(const std::string &key, const int &value);
-    bool setString(const std::string &key, const std::string &value);
+    void setInt(const std::string &key, const int &value);
+    void setString(const std::string &key, const std::string &value);
+    double getDouble(const std::string &key, const double &defaultVal);
+    void setDouble(const std::string &key, const double &value);
+    bool saveConfig();
 };
 
 

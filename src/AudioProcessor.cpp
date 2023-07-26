@@ -44,8 +44,9 @@ AudioProcessor::AudioProcessor() {
         printPaError("Could not initialize PortAudio.", error);
         exit(1);
     }
-    //set the default stream index
+    //set the default stream index and sample rate
     _audioStreamIndex = Pa_GetDefaultOutputDevice();
+    _sampleRate = Pa_GetDeviceInfo(_audioStreamIndex)->defaultSampleRate;
 }
 
 AudioProcessor *AudioProcessor::getInstance() {
@@ -114,13 +115,11 @@ bool AudioProcessor::start() {
     inputParameters.sampleFormat = paFloat32;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
-    //get and the default sample rate for the device stream
-    double sampleRate = Pa_GetDeviceInfo(_audioStreamIndex)->defaultSampleRate;
     stringstream ss;
-    ss << "Reading with sample rate " << sampleRate << ".";
+    ss << "Reading with sample rate " << _sampleRate << ".";
     Log::i(ss.str());
     //open the device for recording
-    PaError error = Pa_OpenStream(&stream, &inputParameters, NULL, sampleRate, BUFFER_SIZE, paClipOff, audioCallback, NULL);
+    PaError error = Pa_OpenStream(&stream, &inputParameters, NULL, _sampleRate, BUFFER_SIZE, paClipOff, audioCallback, NULL);
     if(error != paNoError){
         printPaError("Could not open audio stream.", error);
         return false;
@@ -223,7 +222,7 @@ vector<string> AudioProcessor::printAudioStreams(const vector<string> &blackList
     return streamNames;
 }
 
-bool AudioProcessor::setAudioStreamByName(string name) {
+double AudioProcessor::setAudioStreamByName(string name) {
     //get the connected devices
     int connectedDevices = Pa_GetDeviceCount();
     if(connectedDevices < 0){
@@ -244,8 +243,22 @@ bool AudioProcessor::setAudioStreamByName(string name) {
         stringstream ss;
         ss << "The audio stream with name '" << name << "' does not exist.";
         Log::e(ss.str());
-        return false;
+        return 0;
     }
     _audioStreamIndex = index;
-    return true;
+    //get and the default sample rate for the device stream
+    _sampleRate = Pa_GetDeviceInfo(_audioStreamIndex)->defaultSampleRate;
+    return _sampleRate;
+}
+
+bool AudioProcessor::setSampleRate(double sampleRate) {
+    if(sampleRate > 60 && sampleRate < 400000){
+        _sampleRate = sampleRate;
+        return true;
+    }else{
+        stringstream ss;
+        ss << "The sample rate of " << sampleRate << "Hz is out of bounds.";
+        Log::e(ss.str());
+    }
+    return false;
 }
