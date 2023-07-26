@@ -1,6 +1,6 @@
 # wled-audioreact
 
-This application generates cool light effects for your [WLED](https://kno.wled.ge/) driven strips based on the music currently playing on your computer. You can choose from multiple effects and audio sources to add another dimension to your music listening experience.
+This application generates cool light effects for your [WLED](https://kno.wled.ge/) driven strips based on the music currently playing on your computer. You can choose from multiple effects and audio sources, adding another dimension to your music listening experience.
 
 ## !Warning!
 
@@ -20,7 +20,9 @@ For further licensing information, please have a look at LICENSE.txt
 
 - Reliable IPv4 UDP Communication between the computer and the [WLED](https://kno.wled.ge/) clients on port 21324. For further reference on the interface between this application and WLED have a look at the [WLED Documentation](https://kno.wled.ge/interfaces/udp-realtime/).
 
-- Linux or Windows operating system.
+- x86_64 CPU architecture
+
+- Linux operating system.
 
 ## Installation/Usage
 

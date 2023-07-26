@@ -5,7 +5,6 @@
 #include "SignalController.h"
 
 #define VERSION 0.5
-#define CONFIG_FILE "../settings.json"
 #define AUDIO_STREAM_INDEX_KEY "audioStream"
 #define LED_AMOUNT_KEY "ledAmount"
 

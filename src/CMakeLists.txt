@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 3.23)
 project(wled-audioreact)
-include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 23)
+
+#define available build types
+set(available_build_types Debug Release)
+#check if the selected build type is valid
+if(NOT CMAKE_BUILD_TYPE IN_LIST available_build_types)
+    message(FATAL_ERROR "Invalid build type! Use one of: ${available_build_types}")
+endif()
 
 add_executable(wled-audioreact
         main.cpp
@@ -19,9 +25,21 @@ add_executable(wled-audioreact
         effects/AverageVolumeEffect.cpp
         effects/MaxVolumeEffect.cpp)
 
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(CONFIG_FILE="../settings.json")
+else()
+    add_custom_command(
+            TARGET wled-audioreact POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/settings.json
+            ${CMAKE_CURRENT_BINARY_DIR}/settings.json)
+    add_compile_definitions(CONFIG_FILE="settings.json")
+endif()
+
+#include the header only libraries
 target_include_directories(wled-audioreact PRIVATE ../dependencies/)
 target_include_directories(wled-audioreact PRIVATE ../dependencies/asio/)
-
 
 # Variante für Windows
 if(WIN32)
