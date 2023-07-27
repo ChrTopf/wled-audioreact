@@ -8,11 +8,7 @@
 #include <string>
 #include <thread>
 #include <mutex>
-#if __has_include("portaudio.h")
 #include "portaudio.h"
-#else
-#include "C:/Users/ChrTopf/Documents/repos/portaudio/include/portaudio.h"
-#endif
 #include <condition_variable>
 #include "Effect.h"
 

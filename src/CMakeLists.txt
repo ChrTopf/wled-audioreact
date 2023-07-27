@@ -40,6 +40,7 @@ endif()
 #include the header only libraries
 target_include_directories(wled-audioreact PRIVATE ../dependencies/)
 target_include_directories(wled-audioreact PRIVATE ../dependencies/asio/)
+target_include_directories(wled-audioreact PRIVATE ../dependencies/portaudio_windows_x64/)
 
 # Variante für Windows
 if(WIN32)
