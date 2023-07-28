@@ -1,10 +1,7 @@
 //
 // Created by chrtopf on 07.06.23.
 //
-#include <sstream>
-#include <cstring>
 #include "AudioProcessor.h"
-#include "../Log.h"
 
 void runProcessThread(){
     AudioProcessor::getInstance()->onProcessSamples();
@@ -15,9 +12,9 @@ void runAudioCapture(){
 }
 
 AudioProcessor::AudioProcessor() {
-    //TODO: set the default stream index and sample rate
-    _audioStreamIndex = 0;
-    _sampleRate = 48000;
+    //set the default stream index and sample rate
+    _audioStreamIndex = getDefaultStreamIndex();
+    _sampleRate = getDeviceSampleRate(_audioStreamIndex);
 }
 
 AudioProcessor *AudioProcessor::getInstance() {
@@ -97,7 +94,7 @@ void AudioProcessor::onRun() {
                         LPWSTR deviceId = nullptr;
                         hr = pDevice->GetId(&deviceId);
                         if(!FAILED(hr)){
-                            if(deviceId == _audioStreamIndex){
+                            if(wcscmp(deviceId, _audioStreamIndex) == 0){
                                 device = pDevice;
                                 break;
                             }
@@ -116,12 +113,17 @@ void AudioProcessor::onRun() {
                     hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &device);
                     if(!FAILED(hr)){
                         std::string defaultDeviceName = getDeviceName(device);
+                        //set the sample rate to the default one of the device
+                        _sampleRate = getDeviceSampleRate(device);
                         std::stringstream ss;
                         ss << "Could not find the audio stream with index " << convertLPWSTRToString(_audioStreamIndex) << ". Using the default stream '" << defaultDeviceName << "' now.";
                         Log::w(ss.str());
                     }else{
                         Log::e("WASAPI: Failed to get the default device. Recording was stopped.");
-                        //TODO: stop recording here
+                        //stop recording
+                        pDeviceCollection->Release();
+                        pEnumerator->Release();
+                        CoUninitialize();
                         return;
                     }
                 }
@@ -185,24 +187,21 @@ void AudioProcessor::onRun() {
                                                 }
                                                 //first, check if the last bunch of samples was already processed
                                                 if(sampleBuffer.empty()){
-                                                    //TODO: check for silence ???
-                                                    /*
-                                                    if (flags & AUDCLNT_BUFFERFLAGS_SILENT){
-                                                        pData = nullptr;
+                                                    //check for no silence
+                                                    if (!(flags & AUDCLNT_BUFFERFLAGS_SILENT)){
+                                                        //copy data into another sample buffer
+                                                        unsigned int samplesAvailable = numFramesAvailable * channelCount;
+                                                        for (unsigned int i = 0; i < samplesAvailable; i++)
+                                                        {
+                                                            sampleBuffer.push_back(reinterpret_cast<float*>(pData)[i]);
+                                                        }
+                                                        //notify the audio _processor about a new set of samples
+                                                        {
+                                                            std::lock_guard<std::mutex> lock(std::mutex);
+                                                            AudioProcessor::bufferReady = true;
+                                                        }
+                                                        conditionVariable.notify_one();
                                                     }
-                                                     */
-                                                    //copy the data into another sample buffer
-                                                    unsigned int samplesAvailable = numFramesAvailable * channelCount;
-                                                    for (unsigned int i = 0; i < samplesAvailable; i++)
-                                                    {
-                                                        sampleBuffer.push_back(reinterpret_cast<float*>(pData)[i]);
-                                                    }
-                                                    //notify the audio _processor about a new set of samples
-                                                    {
-                                                        std::lock_guard<std::mutex> lock(std::mutex);
-                                                        AudioProcessor::bufferReady = true;
-                                                    }
-                                                    conditionVariable.notify_one();
                                                 }else{
                                                     //skip the next couple of samples
                                                     Log::d("Too slow, skipping samples.");
@@ -449,7 +448,7 @@ double AudioProcessor::setAudioStreamByName(std::string name) {
                                             if(!FAILED(hr)){
                                                 //set the device id
                                                 _audioStreamIndex = pDeviceId;
-                                                //get the sample rate, which is a DWORD placed at position 12 of the blob data structure
+                                                //save the sample rate
                                                 _sampleRate = waveFormat->nSamplesPerSec;
                                                 return convertDWORDtoDouble(_sampleRate);
                                             }else{
@@ -568,8 +567,138 @@ std::string AudioProcessor::getDeviceName(IMMDevice *pDevice) {
     return "undefined";
 }
 
-DWORD AudioProcessor::getDeviceSampleRate(IMMDevice *pDevice) {
+DWORD AudioProcessor::getDeviceSampleRate(LPWSTR deviceIndex) {
+    DWORD sampleRate = 0;
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 
-    return 0;
+    //get device enumerator
+    IMMDeviceEnumerator* pEnumerator = nullptr;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+    if (!FAILED(hr)) {
+        //get all devices
+        IMMDeviceCollection* pDeviceCollection = nullptr;
+        hr = pEnumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &pDeviceCollection);
+        if(!FAILED(hr)){
+            //get the device count
+            UINT deviceCount = 0;
+            hr = pDeviceCollection->GetCount(&deviceCount);
+            if (!FAILED(hr) && deviceCount > 0) {
+                //go through all devices
+                for (UINT i = 0; i < deviceCount; ++i) {
+
+                    //get one device
+                    IMMDevice* pDevice = nullptr;
+                    hr = pDeviceCollection->Item(i, &pDevice);
+                    if (!FAILED(hr)) {
+                        //get the device id
+                        LPWSTR pDeviceId = nullptr;
+                        hr = pDevice->GetId(&pDeviceId);
+                        if(!FAILED(hr)){
+                            //check if the device was found
+                            if(wcscmp(pDeviceId, deviceIndex) == 0){
+                                //activate the audio client to get the default sample rate
+                                IAudioClient* pAudioClient = nullptr;
+                                hr = pDevice->Activate(IID_IAudioClient, CLSCTX_ALL,nullptr, (void**)& pAudioClient);
+                                if(!FAILED(hr)){
+                                    //get the wave format
+                                    WAVEFORMATEX* waveFormat = nullptr;
+                                    hr = pAudioClient->GetMixFormat(&waveFormat);
+                                    if(!FAILED(hr)){
+                                        //get the default sample rate for the device
+                                        sampleRate = waveFormat->nSamplesPerSec;
+                                    }else{
+                                        Log::e("WASAPI: Failed to get the wave format of a device.");
+                                    }
+                                    pAudioClient->Release();
+                                }else{
+                                    Log::e("WASAPI: Could not activate an audio client");
+                                }
+                                CoTaskMemFree(pDeviceId);
+                                pDevice->Release();
+                                break;
+                            }
+                            CoTaskMemFree(pDeviceId);
+                        }else{
+                            Log::e("WASAPI: Could not get the id of a device.");
+                        }
+                        pDevice->Release();
+                    }else{
+                        Log::w("WASAPI: Could not get a device from the collection.");
+                    }
+
+                }
+            }else if(!FAILED(hr)){
+                Log::w("WASAPI: No active audio devices were found.");
+            }else{
+                Log::e("WASAPI: Could not get the amount of active devices.");
+            }
+            pDeviceCollection->Release();
+        }else{
+            Log::e("WASAPI: Could not obtain collection of active devices.");
+        }
+        pEnumerator->Release();
+    }else{
+        Log::e("WASAPI: Could not create DeviceEnumerator.");
+    }
+
+    CoUninitialize();
+    return sampleRate;
+}
+
+LPWSTR AudioProcessor::getDefaultStreamIndex() {
+    LPWSTR id = nullptr;
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+    //get device enumerator
+    IMMDeviceEnumerator* pEnumerator = nullptr;
+    HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&pEnumerator);
+    if (!FAILED(hr)) {
+        //get the default stream
+        IMMDevice* device = nullptr;
+        hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &device);
+        if(!FAILED(hr)){
+            //get the device id
+            LPWSTR pDeviceId = nullptr;
+            hr = device->GetId(&pDeviceId);
+            if(!FAILED(hr)){
+                id = pDeviceId;
+            }else{
+                Log::w("WASAPI: Could not get a device from the collection.");
+            }
+            device->Release();
+        }else{
+            Log::e("WASAPI: Failed to get the default audio device.");
+        }
+        pEnumerator->Release();
+    }else{
+        Log::e("WASAPI: Could not create DeviceEnumerator.");
+    }
+
+    CoUninitialize();
+    return id;
+}
+
+DWORD AudioProcessor::getDeviceSampleRate(IMMDevice *pDevice) {
+    DWORD sampleRate = 0;
+
+    //activate the audio client to get the default sample rate
+    IAudioClient* pAudioClient = nullptr;
+    HRESULT hr = pDevice->Activate(IID_IAudioClient, CLSCTX_ALL,nullptr, (void**)& pAudioClient);
+    if(!FAILED(hr)){
+        //get the wave format
+        WAVEFORMATEX* waveFormat = nullptr;
+        hr = pAudioClient->GetMixFormat(&waveFormat);
+        if(!FAILED(hr)){
+            //get the default sample rate for the device
+            sampleRate = waveFormat->nSamplesPerSec;
+        }else{
+            Log::e("WASAPI: Failed to get the wave format of a device.");
+        }
+        pAudioClient->Release();
+    }else{
+        Log::e("WASAPI: Could not activate an audio client");
+    }
+
+    return sampleRate;
 }
 

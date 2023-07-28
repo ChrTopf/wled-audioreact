@@ -9,7 +9,10 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <sstream>
+#include <cstring>
 #include "../Effect.h"
+#include "../Log.h"
 
 #include <Windows.h>
 #include <Mmdeviceapi.h>
@@ -47,6 +50,8 @@ private:
     DWORD convertDoubleToDWORD(double doubleValue);
     std::string getDeviceName(IMMDevice* pDevice);
     DWORD getDeviceSampleRate(IMMDevice* pDevice);
+    DWORD getDeviceSampleRate(LPWSTR deviceIndex);
+    LPWSTR getDefaultStreamIndex();
 protected:
     //monitor concept for multithreading
     std::mutex audioBufferMutex;
