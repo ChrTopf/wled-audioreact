@@ -95,7 +95,7 @@ void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
         _green[i] = 0;
         _blue[i] = 0;
     }
-    int peak_height = max(min((int) (LED_AMOUNT * (_trueRMSPeak / _maxVal)), LED_AMOUNT - 1), 0); // LED_COUNT
+    int peak_height = std::max(std::min((int) (LED_AMOUNT * (_trueRMSPeak / _maxVal)), LED_AMOUNT - 1), 0); // LED_COUNT
     //cout<<peak_height<<" pH"<<endl;
     //set the peak point
     _red[peak_height] = (char) 255 - round(_r);

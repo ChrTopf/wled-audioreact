@@ -14,7 +14,7 @@ class Effects{
 private:
     template<typename T> inline static Effect *Class() { return new T; }
 public:
-    inline static const vector<pair<string, Effect*(*)()>> EFFECTS = {
+    inline static const std::vector<std::pair<std::string, Effect*(*)()>> EFFECTS = {
             //list all effects here
             {"A rudimentary average volume slider", Class<AverageVolumeEffect>},
             {"True RMS volume slider with maximum volume tip", Class<RMSMaxVolumeEffect>},

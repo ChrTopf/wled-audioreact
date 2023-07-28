@@ -20,7 +20,7 @@ bool NetworkHandler::initializeAll() {
         auto *socket = new WLEDSocket(_addressees[i], _ledAmount);
         //try to create the socket
         if(!socket->initialize()){
-            stringstream ss;
+            std::stringstream ss;
             ss << "The socket to the address '" << _addressees[i] << "' could not be initialized.";
             Log::e(ss.str());
             return false;

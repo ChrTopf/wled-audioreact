@@ -4,7 +4,7 @@
 #include <sstream>
 #include <cstring>
 #include "AudioProcessor.h"
-#include "Log.h"
+#include "../Log.h"
 
 int audioCallback(const void* inputBuffer, void* outputBuffer, unsigned long framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData){
     //first, check if the last bunch of samples was already processed
@@ -24,7 +24,7 @@ int audioCallback(const void* inputBuffer, void* outputBuffer, unsigned long fra
 
     //notify the audio _processor about a new set of samples
     {
-        std::lock_guard<std::mutex> lock(mutex);
+        std::lock_guard<std::mutex> lock(std::mutex);
         AudioProcessor::bufferReady = true;
     }
     AudioProcessor::conditionVariable.notify_one();
@@ -61,7 +61,7 @@ void AudioProcessor::destroy() {
 }
 
 void AudioProcessor::printPaError(const std::string &text, const PaError &error) {
-    stringstream ss;
+    std::stringstream ss;
     ss << text << " Error: " << Pa_GetErrorText(error);
     Log::e(ss.str());
 }
@@ -99,12 +99,12 @@ bool AudioProcessor::start() {
         //chose the default output device instead
         _audioStreamIndex = Pa_GetDefaultOutputDevice();
         //report the issue
-        stringstream ss;
+        std::stringstream ss;
         ss << "Could not find the audio stream with index " << _audioStreamIndex << ". Using the default stream " << Pa_GetDefaultOutputDevice() << " '" << Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice())->name << "' now.";
         Log::w(ss.str());
     }else{
         //print the chosen stream
-        stringstream ss;
+        std::stringstream ss;
         ss << "Using the audio stream '" << Pa_GetDeviceInfo(_audioStreamIndex)->name << "' (" << _audioStreamIndex << ") now.";
         Log::i(ss.str());
     }
@@ -115,7 +115,7 @@ bool AudioProcessor::start() {
     inputParameters.sampleFormat = paFloat32;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
-    stringstream ss;
+    std::stringstream ss;
     ss << "Reading with sample rate " << _sampleRate << ".";
     Log::i(ss.str());
     //open the device for recording
@@ -172,7 +172,7 @@ void AudioProcessor::stop() {
     }
     //notify the audio _processor about a new set of samples although there are none to prevent a deadlock
     {
-        std::lock_guard<std::mutex> lock(mutex);
+        std::lock_guard<std::mutex> lock(std::mutex);
         AudioProcessor::bufferReady = true;
     }
     AudioProcessor::conditionVariable.notify_one();
@@ -192,13 +192,13 @@ void AudioProcessor::stop() {
 
 //endregion
 
-vector<string> AudioProcessor::printAudioStreams(const vector<string> &blackList) {
+std::vector<std::string> AudioProcessor::printAudioStreams(const std::vector<std::string> &blackList) {
     //get the connected devices
     int connectedDevices = Pa_GetDeviceCount();
     if(connectedDevices < 0){
         Log::e("Could not determine the amount of audio devices.");
     }
-    vector<string> streamNames;
+    std::vector<std::string> streamNames;
     streamNames.resize(connectedDevices);
     //iterate through all available devices
     for (int i = 0; i < connectedDevices; i++) {
@@ -216,13 +216,13 @@ vector<string> AudioProcessor::printAudioStreams(const vector<string> &blackList
             //save the name of that stream
             streamNames[i] = deviceInfo->name;
             //print each stream with its index
-            cout << "[" << i << "]" << " Name: '" << deviceInfo->name << "', Sample-Rate: " << deviceInfo->defaultSampleRate << endl;
+            std::cout << "[" << i << "]" << " Name: '" << deviceInfo->name << "', Sample-Rate: " << deviceInfo->defaultSampleRate << std::endl;
         }
     }
     return streamNames;
 }
 
-double AudioProcessor::setAudioStreamByName(string name) {
+double AudioProcessor::setAudioStreamByName(std::string name) {
     //get the connected devices
     int connectedDevices = Pa_GetDeviceCount();
     if(connectedDevices < 0){
@@ -240,7 +240,7 @@ double AudioProcessor::setAudioStreamByName(string name) {
     }
     //check if the stream was not found
     if(index < 0){
-        stringstream ss;
+        std::stringstream ss;
         ss << "The audio stream with name '" << name << "' does not exist.";
         Log::e(ss.str());
         return 0;
@@ -256,7 +256,7 @@ bool AudioProcessor::setSampleRate(double sampleRate) {
         _sampleRate = sampleRate;
         return true;
     }else{
-        stringstream ss;
+        std::stringstream ss;
         ss << "The sample rate of " << sampleRate << "Hz is out of bounds.";
         Log::e(ss.str());
     }

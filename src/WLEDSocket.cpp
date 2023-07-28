@@ -26,7 +26,7 @@ bool WLEDSocket::initialize() {
         asio::ip::udp::resolver::results_type endpoints = resolver.resolve(asio::ip::udp::v4(), address, WLED_PORT);
         //check if the address was correct
         if(endpoints.empty()){
-            stringstream ss;
+            std::stringstream ss;
             ss << "The IPv4 destination address '" << address << "' is invalid.";
             Log::e(ss.str());
             return false;
@@ -34,7 +34,7 @@ bool WLEDSocket::initialize() {
         //get the first resolved host
         destination = *endpoints.begin();
     }catch (std::exception &e){
-        stringstream ss;
+        std::stringstream ss;
         ss << "Socket could not be initialized. Error: " << e.what();
         Log::e(ss.str());
         return false;
