@@ -304,6 +304,7 @@ void AudioProcessor::stop() {
         std::lock_guard<std::mutex> lock(interruptRecording);
         AudioProcessor::shouldRecord = false;
     }
+    recorder.join();
 
     //stop the processing thread
     {
@@ -450,6 +451,15 @@ double AudioProcessor::setAudioStreamByName(std::string name) {
                                                 _audioStreamIndex = pDeviceId;
                                                 //save the sample rate
                                                 _sampleRate = waveFormat->nSamplesPerSec;
+                                                //release everything before returning
+                                                pAudioClient->Release();
+                                                pPropertyStore->Release();
+                                                PropVariantClear(&propertyName);
+                                                CoTaskMemFree(pDeviceId);
+                                                pDevice->Release();
+                                                pDeviceCollection->Release();
+                                                pEnumerator->Release();
+                                                CoUninitialize();
                                                 return convertDWORDtoDouble(_sampleRate);
                                             }else{
                                                 Log::e("WASAPI: Failed to get the wave format of a device.");

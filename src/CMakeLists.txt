@@ -53,8 +53,6 @@ if(WIN32)
     target_link_libraries(wled-audioreact PRIVATE Kernel32.lib)
     target_link_libraries(wled-audioreact PRIVATE user32.lib)
     target_link_libraries(wled-audioreact PRIVATE winmm.lib)
-    #target_link_libraries(wled-audioreact PRIVATE uuid.lib)
-    #target_link_libraries(wled-audioreact PRIVATE ${PROJECT_SOURCE_DIR}/../dependencies/portaudio_windows_x64/portaudio_x64.dll)
 endif()
 
 #linux build
@@ -62,6 +60,7 @@ if(UNIX AND NOT APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_definitions(-DDEBIAN_BUILD)
     target_include_directories(wled-audioreact PRIVATE linux/)
     target_sources(wled-audioreact PRIVATE linux/AudioProcessor.cpp)
+    #comment/uncomment this, depending on your linux distro
     #target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
     target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
 endif()
