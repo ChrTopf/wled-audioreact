@@ -28,12 +28,15 @@ add_executable(wled-audioreact
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(CONFIG_FILE="../settings.json")
 else()
+    #copy the settings file into release output directory
     add_custom_command(
             TARGET wled-audioreact POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/settings.json
             ${CMAKE_CURRENT_BINARY_DIR}/settings.json)
     add_compile_definitions(CONFIG_FILE="settings.json")
+    #include standard libraries in release build
+    set(CMAKE_EXE_LINKER_FLAGS "-static")
 endif()
 
 #include the header only libraries
