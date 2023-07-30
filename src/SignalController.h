@@ -6,11 +6,7 @@
 #define WLED_AUDIOREACT_SIGNALCONTROLLER_H
 #include <string>
 #include "NetworkHandler.h"
-#if __has_include("win/AudioProcessor.h")
-#include "win/AudioProcessor.h"
-#else
-#include "linux/AudioProcessor.h"
-#endif
+#include "AudioProcessor.h"
 #include "WLEDSocket.h"
 #include "Config.h"
 

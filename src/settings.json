@@ -2,11 +2,11 @@
   "addressees": {
     "0": "192.168.241.59"
   },
-  "audioStream": "Lautsprecher (Logitech G933 Gaming Headset)",
-  "effectIndex": 2,
+  "audioStream": "default",
+  "effectIndex": 1,
   "ledAmount": 144,
   "loglevel": 1,
-  "sampleRate": 48000.0,
+  "sampleRate": 44100.0,
   "streamBlacklist": {
     "0": "upmix",
     "1": "vdownmix"
