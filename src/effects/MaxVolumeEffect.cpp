@@ -7,7 +7,7 @@
 
 #define SPEED_MULTIPLIER 0.5
 
-void MaxVolumeEffect::onData(const vector<float> &data) {
+void MaxVolumeEffect::onData(const std::vector<float> &data) {
     //go through all the samples
     float currentMax = 0;
     for(int i = 0; i < data.size(); i++){

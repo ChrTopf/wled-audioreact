@@ -16,7 +16,6 @@ add_executable(wled-audioreact
         Config.cpp
         NetworkHandler.cpp
         WLEDSocket.cpp
-        AudioProcessor.cpp
         SignalController.cpp
         Effect.h
         EffectParameters.h
@@ -29,33 +28,43 @@ add_executable(wled-audioreact
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(CONFIG_FILE="../settings.json")
 else()
+    #copy the settings file into release output directory
     add_custom_command(
             TARGET wled-audioreact POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/settings.json
             ${CMAKE_CURRENT_BINARY_DIR}/settings.json)
     add_compile_definitions(CONFIG_FILE="settings.json")
+    #include standard libraries in the windows release build
+    if(WIN32)
+        set(CMAKE_EXE_LINKER_FLAGS "-static")
+    endif()
 endif()
 
 #include the header only libraries
 target_include_directories(wled-audioreact PRIVATE ../dependencies/)
 target_include_directories(wled-audioreact PRIVATE ../dependencies/asio/)
 
-# Variante für Windows
+#windows build
 if(WIN32)
     add_definitions(-DWINDOWS_BUILD)
+    target_include_directories(wled-audioreact PRIVATE win/)
+    target_sources(wled-audioreact PRIVATE win/AudioProcessor.cpp)
     target_link_libraries(wled-audioreact PRIVATE ws2_32)
-    target_link_libraries(wled-audioreact PRIVATE ${PROJECT_SOURCE_DIR}/../dependencies/portaudio_windows_x64/portaudio_x64.dll)
+    target_link_libraries(wled-audioreact PRIVATE ole32.dll)
+    target_link_libraries(wled-audioreact PRIVATE mmdevapi.dll)
+    target_link_libraries(wled-audioreact PRIVATE propsys.dll)
+    target_link_libraries(wled-audioreact PRIVATE Kernel32.lib)
+    target_link_libraries(wled-audioreact PRIVATE user32.lib)
+    target_link_libraries(wled-audioreact PRIVATE winmm.lib)
 endif()
 
-# Variante für Debian
+#linux build
 if(UNIX AND NOT APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_definitions(-DDEBIAN_BUILD)
+    target_include_directories(wled-audioreact PRIVATE linux/)
+    target_sources(wled-audioreact PRIVATE linux/AudioProcessor.cpp)
+    #comment/uncomment this, depending on your linux distro
     target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
-endif()
-
-# Variante für Manjaro
-if(UNIX AND NOT APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_NAME STREQUAL "Manjaro")
-    add_definitions(-DMANJARO_BUILD)
-    target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
+    #target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
 endif()

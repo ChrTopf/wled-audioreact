@@ -13,8 +13,6 @@
 #define ANSI_GREEN "\u001b[32m"
 #define ANSI_PURPLE "\u001B[35m"
 
-using namespace std;
-
 enum LOG_LEVEL{
     LEVEL_DEBUG,
     LEVEL_INFO,
@@ -25,11 +23,11 @@ enum LOG_LEVEL{
 class Log {
 private:
     //a list of labels ordered by their log level (0 to 3)
-    inline static const string LABEL[] = {"DBUG", "LEVEL_INFO", "WARN", "FATA"};
+    inline static const std::string LABEL[] = {"DBUG", "LEVEL_INFO", "WARN", "FATA"};
     //a list of colors ordered by their log level matching the labels (0 to 3)
-    inline static const string COLOR[] = {ANSI_PURPLE, ANSI_GREEN, ANSI_YELLOW, ANSI_RED};
+    inline static const std::string COLOR[] = {ANSI_PURPLE, ANSI_GREEN, ANSI_YELLOW, ANSI_RED};
     //the method for printing every log message
-    static void out(LOG_LEVEL level, const string& msg);
+    static void out(LOG_LEVEL level, const std::string& msg);
     static bool isColor;
     static LOG_LEVEL logLevel;
 public:
@@ -57,45 +55,45 @@ public:
      * Log a debug message.
      * @param msg The message.
      */
-    inline static void d(const string& msg){ out(LEVEL_DEBUG, msg);}
+    inline static void d(const std::string& msg){ out(LEVEL_DEBUG, msg);}
     /**
      * Log a debug message.
      * @param msg The message.
      */
-    inline static void D(const string& msg){out(LEVEL_DEBUG, msg);}
+    inline static void D(const std::string& msg){out(LEVEL_DEBUG, msg);}
 
     /**
      * Log an info message.
      * @param msg The message.
      */
-    inline static void i(const string& msg){ out(LEVEL_INFO, msg);}
+    inline static void i(const std::string& msg){ out(LEVEL_INFO, msg);}
     /**
      * Log an info message.
      * @param msg The message.
      */
-    inline static void I(const string& msg){out(LEVEL_INFO, msg);}
+    inline static void I(const std::string& msg){out(LEVEL_INFO, msg);}
 
     /**
      * Log a warning message.
      * @param msg The message.
      */
-    inline static void w(const string& msg){out(LEVEL_WARNING, msg);}
+    inline static void w(const std::string& msg){out(LEVEL_WARNING, msg);}
     /**
      * Log a warning message.
      * @param msg The message.
      */
-    inline static void W(const string& msg){out(LEVEL_WARNING, msg);}
+    inline static void W(const std::string& msg){out(LEVEL_WARNING, msg);}
 
     /**
      * Log an error message.
      * @param msg The message.
      */
-    inline static void e(const string& msg){out(LEVEL_ERROR, msg);}
+    inline static void e(const std::string& msg){out(LEVEL_ERROR, msg);}
     /**
      * Log an error message.
      * @param msg The message.
      */
-    inline static void E(const string& msg){out(LEVEL_ERROR, msg);}
+    inline static void E(const std::string& msg){out(LEVEL_ERROR, msg);}
 };
 
 

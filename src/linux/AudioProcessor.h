@@ -8,13 +8,9 @@
 #include <string>
 #include <thread>
 #include <mutex>
-#if __has_include("portaudio.h")
 #include "portaudio.h"
-#else
-#include "C:/Users/ChrTopf/Documents/repos/portaudio/include/portaudio.h"
-#endif
 #include <condition_variable>
-#include "Effect.h"
+#include "../Effect.h"
 
 #define BUFFER_SIZE 1470 //882 for 50fps, 1470 for 30fps
 
@@ -58,13 +54,13 @@ public:
     void onProcessSamples();
     void stop();
     //audio stream selection
-    vector<string> printAudioStreams(const vector<string> &blackList);
+    std::vector<std::string> printAudioStreams(const std::vector<std::string> &blackList);
     /**
      * Set the current audio stream as source using its name.
      * @param name The name of the stream to be processed.
      * @return returns the default sample rate of that stream or 0 if it could not be configured.
      */
-    double setAudioStreamByName(string name);
+    double setAudioStreamByName(std::string name);
     /**
      * Set the sample rate for the current audio stream to be recorded at. It needs to lie between 60Hz and 400kHz.
      * @param sampleRate The sample rate to be chosen.

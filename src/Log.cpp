@@ -8,7 +8,7 @@
 bool Log::isColor = false;
 LOG_LEVEL Log::logLevel = LEVEL_INFO;
 
-void Log::out(const LOG_LEVEL level, const string& msg) {
+void Log::out(const LOG_LEVEL level, const std::string& msg) {
     //check if the message of that level needs to be logged
     if(level < logLevel){
         return;
@@ -21,9 +21,9 @@ void Log::out(const LOG_LEVEL level, const string& msg) {
     std::strftime(buffer, 32, "%a, %d.%m.%Y %H:%M:%S", ptm);
     //now print the log message
     if(isColor){
-        cout << "[" << buffer << "][" << COLOR[level] << LABEL[level] << ANSI_RESET << "]: " << msg << endl;
+        std::cout << "[" << buffer << "][" << COLOR[level] << LABEL[level] << ANSI_RESET << "]: " << msg << std::endl;
     }else{
-        cout << "[" << buffer << "][" << LABEL[level] << "]: " << msg << endl;
+        std::cout << "[" << buffer << "][" << LABEL[level] << "]: " << msg << std::endl;
     }
 }
 

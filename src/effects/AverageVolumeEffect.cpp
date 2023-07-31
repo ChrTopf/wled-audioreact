@@ -7,7 +7,7 @@
 
 #define SPEED_MULTIPLIER 0.5
 
-void AverageVolumeEffect::onData(const vector<float> &data) {
+void AverageVolumeEffect::onData(const std::vector<float> &data) {
     //go through all the samples
     float cumulated = 0;
     for(int i = 0; i < data.size(); i++){

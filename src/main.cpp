@@ -4,24 +4,22 @@
 #include "Log.h"
 #include "SignalController.h"
 
-#define VERSION 0.5
+#define VERSION 1.0
 #define AUDIO_STREAM_INDEX_KEY "audioStream"
 #define LED_AMOUNT_KEY "ledAmount"
-
-using namespace std;
 
 int main() {
     std::srand( time(NULL));
     //print the name of the application
-    cout <<
+    std::cout <<
     "__        ___     _____ ____       _             _ _             ____                 _   \n"
     "\\ \\      / / |   | ____|  _ \\     / \\  _   _  __| (_) ___       |  _ \\ ___  __ _  ___| |_ \n"
     " \\ \\ /\\ / /| |   |  _| | | | |   / _ \\| | | |/ _` | |/ _ \\ _____| |_) / _ \\/ _` |/ __| __|\n"
     "  \\ V  V / | |___| |___| |_| |  / ___ \\ |_| | (_| | | (_) |_____|  _ <  __/ (_| | (__| |_ \n"
     "   \\_/\\_/  |_____|_____|____/  /_/   \\_\\__,_|\\__,_|_|\\___/      |_| \\_\\___|\\__,_|\\___|\\__|"
-    << endl;
-    cout << "Version: " << VERSION << endl;
-    cout << "Copyright (c) 2023 ChrTopf & TheMaffinStuffer" << endl;
+    << std::endl;
+    std::cout << "Version: " << VERSION << std::endl;
+    std::cout << "Copyright (c) 2023 ChrTopf & TheMaffinStuffer" << std::endl;
     //enable colored log messages
     Log::enableColor(true);
     //read the config file
@@ -35,7 +33,7 @@ int main() {
     //get all addressees
     auto addresses = config.getValues("addressees");
     for(int i = 0; i < addresses.size(); i++){
-        stringstream ss;
+        std::stringstream ss;
         ss << "Streaming to address '" << addresses[i] << "'";
         Log::i(ss.str());
     }
@@ -58,17 +56,17 @@ int main() {
     bool exit = false;
     while(!exit){
         //print usage information
-        cout << "--------------------------------------------------------------------------------" << endl;
-        cout << "Choose an action by its index:" << endl;
-        cout << "[0]: Exit the application." << endl;
-        cout << "[1]: Change effect." << endl;
-        cout << "[2]: Switch audio source." << endl;
+        std::cout << "--------------------------------------------------------------------------------" << std::endl;
+        std::cout << "Choose an action by its index:" << std::endl;
+        std::cout << "[0]: Exit the application." << std::endl;
+        std::cout << "[1]: Change effect." << std::endl;
+        std::cout << "[2]: Switch audio source." << std::endl;
         //let the user decide
         int index = -1;
         while(true) {
             //get the index
-            cout << "> ";
-            cin >> index;
+            std::cout << "> ";
+            std::cin >> index;
             //check if the index has been incorrect
             if(index < 0 || index > 2){
                 Log::w("Please enter a valid index! Try again:");

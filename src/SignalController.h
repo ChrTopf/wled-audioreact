@@ -14,11 +14,11 @@ class SignalController {
 private:
     NetworkHandler _network;
     AudioProcessor *_processor;
-    Config _config;
-    vector<string> _blacklist;
+    Config &_config;
+    std::vector<std::string> _blacklist;
     void setEffect(Effect *effect);
-    inline static void printEffect(const int index, const string &text){
-        cout << "[" << index << "]" << " " << text << endl;
+    inline static void printEffect(const int index, const std::string &text){
+        std::cout << "[" << index << "]" << " " << text << std::endl;
     }
 public:
     SignalController(const std::vector<std::string> &addressees, int ledAmount, Config &config);

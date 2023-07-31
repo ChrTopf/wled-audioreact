@@ -5,6 +5,7 @@
 #ifndef WLED_AUDIOREACT_WLEDSOCKET_H
 #define WLED_AUDIOREACT_WLEDSOCKET_H
 #include <string>
+#include <sstream>
 #include <asio.hpp>
 #include "Log.h"
 
