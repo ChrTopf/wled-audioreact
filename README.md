@@ -10,19 +10,19 @@ This application can potentially trigger seizures for people with photosensitive
 
 This software is free for non commercial use only. You are prohibited to copy, modify or sell this software without permission.
 
-By using this software you automatically agree to its license.
+By using this software you automatically agree to its license and the licenses of all the libraries used by it.
 
 For further licensing information, please have a look at LICENSE.txt
 
 ## Requirements
 
-- n WLED Clients with m RGB LEDs each. (where "n" and "m" stand for positive non zero integers)
+- n WLED clients with m RGB LEDs each. (where "n" and "m" stand for positive non zero integers)
 
-- Reliable IPv4 UDP Communication between the computer and the [WLED](https://kno.wled.ge/) clients on port 21324. For further reference on the interface between this application and WLED have a look at the [WLED Documentation](https://kno.wled.ge/interfaces/udp-realtime/).
+- Reliable IPv4 UDP communication between the computer and the [WLED](https://kno.wled.ge/) clients on port 21324. For further reference on the interface between this application and WLED have a look at the [WLED Documentation](https://kno.wled.ge/interfaces/udp-realtime/).
 
 - x86_64 CPU architecture
 
-- Linux operating system.
+- GNU/Linux or Microsoft Windows operating system.
 
 ## Installation/Usage
 
@@ -30,37 +30,39 @@ For further licensing information, please have a look at LICENSE.txt
 
 2. Configure everything in the settings file. See [Configuration](#Configuration) section for more information.
 
-3. Start the application (over the command line), choose an audio stream as input and one of the effects.
+3. Start the application over the command line, choose an audio stream as input and one of the effects.
 
 ## Configuration
 
 The configuration file `settings.json` contains the following entries:
 
-| Setting           | Example Value(s)                                      | Description                                                                                                                                                                                                                                                                                                |
-| ----------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `addressees`      | `"0":"192.168.178.241.59",`<br/>`"1":"192.168.178.33` | A List of IPv4 Adresses of the WLED Clients. The first key must be 0. Each Client is going to receive the same Information to be displayed.                                                                                                                                                                |
-| `audioStream`     | `"spotify"`                                           | The name of the currently chosen audio stream. Can be left empty, as this is modified by the application.                                                                                                                                                                                                  |
-| `sampleRate`      | `44100`                                               | The sample rate or sample size, with which the audio stream is red by this application. The higher the sample rate, the higher the effect quality.                                                                                                                                                         |
-| `effectIndex`     | `0`                                                   | The index of the currently chosen effect. Can be left empty, as this is modified by the application.                                                                                                                                                                                                       |
-| `ledAmount`       | `144`                                                 | The amount of LEDs controlled by each WLED Client. So if you have Clients with 144 LEDs each, this parameter should be 144. Only linear (one dimensional) LED Stripes are supported. No LED matrices or LED cubes. For setups with multiple stripe Lengths, this should be the length of the smallest one. |
-| `loglevel`        | `1`                                                   | The level, that determines which log messages are printed. This parameter specifies the lowest level to be printed.<br/>`0` : Debug<br/>`1` : Info<br/>`2` : Warning<br/>`3` : Error                                                                                                                       |
-| `streamBlacklist` | `"0": "upmix",`<br/>`"1": "vdownmix"`                 | A list of audio stream names, that should not be selected by this application. This needs to be configured manually.                                                                                                                                                                                       |
+| Setting           | Example Value(s)                                       | Description                                                                                                                                                                                                                                                                                             |
+| ----------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addressees`      | `"0":"192.168.178.241.59",`<br/>`"1":"192.168.178.33"` | A List of IPv4 adresses of the WLED clients. The first key must be 0. Each client is going to receive the same information to be displayed.                                                                                                                                                             |
+| `audioStream`     | `"spotify"`                                            | The name of the currently chosen audio stream. Can be left empty, as this is modified by the application.                                                                                                                                                                                               |
+| `sampleRate`      | `44100`                                                | The sample rate or sample size, with which the audio stream is red. Choosing the standard sample rate of an audio stream is recommended. Can be left empty, as this is modified by the application.                                                                                                     |
+| `effectIndex`     | `0`                                                    | The index of the currently chosen effect. Can be left empty, as this is modified by the application.                                                                                                                                                                                                    |
+| `ledAmount`       | `144`                                                  | The amount of LEDs controlled by each WLED client. If you have clients with 144 LEDs each, this parameter should be 144. Only linear (one dimensional) LED stripes are supported. No LED matrices or LED cubes. For setups with multiple stripe Lengths, this should be the length of the smallest one. |
+| `loglevel`        | `1`                                                    | The level, that determines which log messages are printed. This parameter specifies the lowest level to be printed.<br/>`0` : Debug<br/>`1` : Info<br/>`2` : Warning<br/>`3` : Error                                                                                                                    |
+| `streamBlacklist` | `"0": "upmix",`<br/>`"1": "vdownmix"`                  | A list of audio stream names, that should not be selected by this application. This needs to be configured manually.                                                                                                                                                                                    |
 
 ## Developer Notes
+
+- Open the `src/` directory as a project in your IDE.
 
 - The recommended IDE for development is CLion.
 
 - In Order to build the application you need to install all necessary dependencies first.
 
-- When implementing a new Effect, do not forget to add it in the Effects.h!
+- When implementing a new effect, do not forget to add it in the Effects.h!
 
 ### Dependencies
 
-| Name                                       | Version    | Installation                                                                                                    |
-| ------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------- |
-| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Already done in CMakeLists                                                                                      |
-| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux:<br/>`sudo apt install portaudio19-dev`<br/>Windows:<br/>Build the .dll and include it in the CMakeLists. |
-| [ASIO](https://think-async.com/Asio/)      | >= v1.28.0 | Linux:<br/>`sudo apt install libasio-dev`                                                                       |
+| Name                                       | Version    | Installation                                                                                                                            |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Located in dependencies directory and automatically found by CMake.                                                                     |
+| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux:<br/>`sudo apt install portaudio19-dev`<br/>Windows:<br/>PortAudio is not required for the Windows build. WASAPI is used instead. |
+| [ASIO](https://think-async.com/Asio/)      | >= v1.28.0 | Located in dependencies directory and automatically found by CMake.                                                                     |
 
 ## Version History
 
@@ -71,3 +73,4 @@ The configuration file `settings.json` contains the following entries:
 | 0.3     | snapshot | 18.06.2023 | first usable application; 3 effects included                                       |
 | 0.4     | snapshot | 21.06.2023 | fixed wrong audio stream issue; fixed audio stream setting not deleted after crash |
 | 0.5     | snapshot | 23.06.2023 | implemented sample rate and led amount setting                                     |
+| 1.0     | release  | 01.08.2023 | added support for Microsoft Windows                                                |

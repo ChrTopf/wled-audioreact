@@ -14,7 +14,7 @@ class SignalController {
 private:
     NetworkHandler _network;
     AudioProcessor *_processor;
-    Config _config;
+    Config &_config;
     std::vector<std::string> _blacklist;
     void setEffect(Effect *effect);
     inline static void printEffect(const int index, const std::string &text){

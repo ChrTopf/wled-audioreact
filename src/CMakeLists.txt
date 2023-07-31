@@ -35,14 +35,15 @@ else()
             ${CMAKE_SOURCE_DIR}/settings.json
             ${CMAKE_CURRENT_BINARY_DIR}/settings.json)
     add_compile_definitions(CONFIG_FILE="settings.json")
-    #include standard libraries in release build
-    set(CMAKE_EXE_LINKER_FLAGS "-static")
+    #include standard libraries in the windows release build
+    if(WIN32)
+        set(CMAKE_EXE_LINKER_FLAGS "-static")
+    endif()
 endif()
 
 #include the header only libraries
 target_include_directories(wled-audioreact PRIVATE ../dependencies/)
 target_include_directories(wled-audioreact PRIVATE ../dependencies/asio/)
-target_include_directories(wled-audioreact PRIVATE ../dependencies/portaudio_windows_x64/)
 
 #windows build
 if(WIN32)
@@ -64,6 +65,6 @@ if(UNIX AND NOT APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_include_directories(wled-audioreact PRIVATE linux/)
     target_sources(wled-audioreact PRIVATE linux/AudioProcessor.cpp)
     #comment/uncomment this, depending on your linux distro
-    #target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
-    target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
+    target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
+    #target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
 endif()
