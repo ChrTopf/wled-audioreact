@@ -16,13 +16,13 @@ For further licensing information, please have a look at LICENSE.txt
 
 ## Requirements
 
-- n WLED clients with m RGB LEDs each. (where "n" and "m" stand for positive non zero integers)
+- n WLED clients with one LED strip each. Each LED strip should have an equal amount of LEDs.
 
 - Reliable IPv4 UDP communication between the computer and the [WLED](https://kno.wled.ge/) clients on port 21324. For further reference on the interface between this application and WLED have a look at the [WLED Documentation](https://kno.wled.ge/interfaces/udp-realtime/).
 
 - x86_64 CPU architecture
 
-- GNU/Linux or Microsoft Windows operating system.
+- GNU/Linux or Microsoft Windows operating system
 
 ## Installation/Usage
 
@@ -31,6 +31,14 @@ For further licensing information, please have a look at LICENSE.txt
 2. Configure everything in the settings file. See [Configuration](#Configuration) section for more information.
 
 3. Start the application over the command line, choose an audio stream as input and one of the effects.
+
+## Effects
+
+| Description                                                                                                                                                    | Preview |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| A rudimentary average volume slider. Indicates the average value of all recorded audio samples. (With color cycle)                                             | W.I.P.  |
+| True RMS volume slider with maximum volume tip. An average volume slider with RMS values and a different colored tip to indicate the peaks. (With color cycle) | W.I.P.  |
+| A basic maximum volume slider. Indicates the maximum value of all recorded audio samples. (With color cycle)                                                   | W.I.P.  |
 
 ## Configuration
 
