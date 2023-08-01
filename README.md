@@ -8,11 +8,11 @@ This application can potentially trigger seizures for people with photosensitive
 
 ## License
 
-This software is free for non commercial use only. You are prohibited to copy, modify or sell this software without permission.
+This software is licensed under the GNU General Public License v3.0.
 
-By using this software you automatically agree to its license and the licenses of all the libraries used by it.
+By using this software you automatically agree to its license.
 
-For further licensing information, please have a look at LICENSE.txt
+For further licensing information, please have a look at [LICENSE](LICENSE).
 
 ## Requirements
 
