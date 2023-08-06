@@ -11,7 +11,7 @@ void AverageVolumeEffect::onData(const std::vector<float> &data) {
     //go through all the samples
     float cumulated = 0;
     for(int i = 0; i < data.size(); i++){
-        cumulated += abs(data[i]);
+        cumulated += std::abs(data[i]);
     }
     //calculate the current currentVal
     float currentVal = cumulated / data.size();
@@ -69,9 +69,9 @@ void AverageVolumeEffect::onData(const std::vector<float> &data) {
     }
     //calculate the new height
     for(int i = 0; i < height; i++){
-        _red[i] = (char) round(_r);
-        _green[i] = (char) round(_g);
-        _blue[i] = (char) round(_b);
+        _red[i] = (char) std::round(_r);
+        _green[i] = (char) std::round(_g);
+        _blue[i] = (char) std::round(_b);
     }
     //fill black space
     for(int i = height; i < LED_AMOUNT; i++){

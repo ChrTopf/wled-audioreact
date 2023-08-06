@@ -21,11 +21,6 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include <Audiopolicy.h>
 
-#define REFTIMES_PER_SEC  10000000
-#define REFTIMES_PER_MILLISEC  10000
-//the amount of 100ns to pass for one frame to be captured
-#define BUFFER_DURATION 333334 //333334 for 30 fps (1/(100*10^-9*30)=333334)
-
 class AudioProcessor{
 private:
     //singleton
