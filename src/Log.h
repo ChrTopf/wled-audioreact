@@ -23,7 +23,7 @@ enum LOG_LEVEL{
 class Log {
 private:
     //a list of labels ordered by their log level (0 to 3)
-    inline static const std::string LABEL[] = {"DBUG", "LEVEL_INFO", "WARN", "FATA"};
+    inline static const std::string LABEL[] = {"DBUG", "INFO", "WARN", "FATA"};
     //a list of colors ordered by their log level matching the labels (0 to 3)
     inline static const std::string COLOR[] = {ANSI_PURPLE, ANSI_GREEN, ANSI_YELLOW, ANSI_RED};
     //the method for printing every log message

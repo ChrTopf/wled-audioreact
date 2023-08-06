@@ -4,7 +4,7 @@
 #include "Log.h"
 #include "SignalController.h"
 
-#define VERSION 1.0
+#define VERSION 1.1
 #define AUDIO_STREAM_INDEX_KEY "audioStream"
 #define LED_AMOUNT_KEY "ledAmount"
 

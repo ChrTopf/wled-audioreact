@@ -4,13 +4,13 @@
 #include "RMSMaxVolumeEffect.h"
 #include <cmath>
 
-#define SPEED_MULTIPLIER 0.5
+#define SPEED_MULTIPLIER 0.5f
 
 void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
     //go through all the samples
     float currentMax = 0;
     for(int i = 0; i < data.size(); i++){
-        float val = abs(data[i]);
+        float val = std::abs(data[i]);
         if(val > currentMax){
             currentMax = val;
         }
@@ -21,7 +21,7 @@ void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
         float val = data[i];
         currentRMS += val*val;
     }
-    currentRMS = sqrt(currentRMS / ((float) data.size() / 2));
+    currentRMS = std::sqrt(currentRMS / ((float) data.size() / 2));
     //print the current maximum and rms value
     //cout<<currentRMS<<" sampleRMS | ";
 
@@ -29,13 +29,13 @@ void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
         _maxVal = 0;
         return;
     }
-    currentRMS = log10(currentRMS)*20;
+    currentRMS = std::log10(currentRMS)*20;
     //cout<<currentRMS<<" dBm"<<endl;
-    currentRMS = abs(1/currentRMS);
+    currentRMS = std::abs(1/currentRMS);
 
-    currentMax = log10(currentMax)*20;
+    currentMax = std::log10(currentMax)*20;
     //cout<<currentMax<<" dBm_max"<<endl;
-    currentMax = abs(1/currentMax);
+    currentMax = std::abs(1/currentMax);
 
     //implement causal system with delay
     //currentRMS = 0.25 * _secondLastVal + 0.5 * _lastVal + currentRMS;
@@ -65,7 +65,7 @@ void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
             _maxVal = currentRMS;
         }
         //calculate the next height
-        height = (int) (LED_AMOUNT * (currentRMS / _maxVal)); // LED_COUNT
+        height = (int) ((float) LED_AMOUNT * (currentRMS / _maxVal)); // LED_COUNT
         //color speed factor
         cSpeed = (currentRMS / _maxVal) * SPEED_MULTIPLIER;
     }
@@ -85,9 +85,9 @@ void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
     }
     //calculate the new height
     for(int i = 0; i < height; i++){
-        _red[i] = (char) round(_r);
-        _green[i] = (char) round(_g);
-        _blue[i] = (char) round(_b);
+        _red[i] = (char8_t) std::round(_r);
+        _green[i] = (char8_t) std::round(_g);
+        _blue[i] = (char8_t) std::round(_b);
     }
     //fill black space
     for(int i = height; i < LED_AMOUNT; i++){
@@ -98,9 +98,9 @@ void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
     int peak_height = std::max(std::min((int) (LED_AMOUNT * (_trueRMSPeak / _maxVal)), LED_AMOUNT - 1), 0); // LED_COUNT
     //cout<<peak_height<<" pH"<<endl;
     //set the peak point
-    _red[peak_height] = (char) 255 - round(_r);
-    _green[peak_height] = (char) 255 - round(_g);
-    _blue[peak_height] = (char) 255 - round(_r);
+    _red[peak_height] = (char8_t) (255 - std::round(_r));
+    _green[peak_height] = (char8_t) (255 - std::round(_g));
+    _blue[peak_height] = (char8_t) (255 - std::round(_r));
     //now send the data
     _network->sendData(_red, _green, _blue);
 }
