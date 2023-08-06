@@ -141,7 +141,7 @@ void AudioProcessor::onRun() {
                         hr = pAudioClient->Initialize(
                                 AUDCLNT_SHAREMODE_SHARED,
                                 AUDCLNT_STREAMFLAGS_LOOPBACK,
-                                BUFFER_DURATION,
+                                0,
                                 0,
                                 waveFormat,
                                 NULL);
@@ -154,8 +154,11 @@ void AudioProcessor::onRun() {
                                 IAudioCaptureClient* pCaptureClient = nullptr;
                                 hr = pAudioClient->GetService(IID_IAudioCaptureClient,(void**)& pCaptureClient);
                                 if(!FAILED(hr)){
+                                    std::stringstream bfc;
+                                    bfc << "The BufferFrameCount was automatically set to: " << bufferFrameCount;
+                                    Log::d(bfc.str());
                                     // Calculate the actual duration of the allocated buffer.
-                                    REFERENCE_TIME hnsActualDuration = (double)REFTIMES_PER_SEC * bufferFrameCount / waveFormat->nSamplesPerSec;
+                                    REFERENCE_TIME hnsActualDuration = waveFormat->nSamplesPerSec / bufferFrameCount;
                                     //start the audio capture
                                     hr = pAudioClient->Start();
                                     if(!FAILED(hr)){
@@ -166,10 +169,12 @@ void AudioProcessor::onRun() {
                                         UINT32 packetLength = 0;
                                         DWORD flags;
                                         UINT32 numFramesAvailable;
+                                        float buffer[bufferFrameCount * 2];
+                                        unsigned int bufferedSamples = 0;
                                         //process the buffer
                                         while(running){
                                             //sleep for half the buffer duration.
-                                            Sleep(hnsActualDuration / REFTIMES_PER_MILLISEC / 2);
+                                            Sleep(hnsActualDuration / 4);
                                             hr = pCaptureClient->GetNextPacketSize(&packetLength);
                                             if(FAILED(hr)){
                                                 Log::e("WASAPI: Could not get the next packet size.");
@@ -185,27 +190,39 @@ void AudioProcessor::onRun() {
                                                     Log::w("WASAPI: Could not read a buffer.");
                                                     break;
                                                 }
-                                                //first, check if the last bunch of samples was already processed
-                                                if(sampleBuffer.empty()){
-                                                    //check for no silence
-                                                    if (!(flags & AUDCLNT_BUFFERFLAGS_SILENT)){
+                                                //check for no silence
+                                                if (!(flags & AUDCLNT_BUFFERFLAGS_SILENT)){
+                                                    //append the new samples to the end of the buffer
+                                                    for(unsigned int i = 0; i < numFramesAvailable; i++){
+                                                        buffer[i + bufferedSamples] = reinterpret_cast<float*>(pData)[i * channelCount];
+                                                    }
+                                                    bufferedSamples += numFramesAvailable;
+                                                }
+                                                //check if the buffer is full
+                                                if(bufferedSamples >= bufferFrameCount){
+                                                    //check if the other thread was fast enough with processing the previous buffer
+                                                    if(sampleBuffer.empty()){
                                                         //copy data into another sample buffer
-                                                        unsigned int samplesAvailable = numFramesAvailable * channelCount;
-                                                        for (unsigned int i = 0; i < samplesAvailable; i++)
+                                                        for (unsigned int i = 0; i < bufferedSamples; i++)
                                                         {
-                                                            sampleBuffer.push_back(reinterpret_cast<float*>(pData)[i]);
+                                                            sampleBuffer.push_back(buffer[i]);
                                                         }
-                                                        //notify the audio _processor about a new set of samples
+                                                        //notify the audio processor about a new set of samples
                                                         {
                                                             std::lock_guard<std::mutex> lock(std::mutex);
                                                             AudioProcessor::bufferReady = true;
                                                         }
                                                         conditionVariable.notify_one();
+                                                    }else{
+                                                        std::stringstream ss;
+                                                        ss << "Too slow, skipping " << bufferedSamples << " samples.";
+                                                        //skip the next couple of samples
+                                                        Log::d(ss.str());
                                                     }
-                                                }else{
-                                                    //skip the next couple of samples
-                                                    Log::d("Too slow, skipping samples.");
+                                                    //reset the buffer
+                                                    bufferedSamples = 0;
                                                 }
+
                                                 hr = pCaptureClient->ReleaseBuffer(numFramesAvailable);
                                                 if(FAILED(hr)){
                                                     Log::e("WASAPI: Could not release a buffer.");
