@@ -22,7 +22,8 @@ add_executable(wled-audioreact
         effects/Effects.h
         effects/RMSMaxVolumeEffect.cpp
         effects/AverageVolumeEffect.cpp
-        effects/MaxVolumeEffect.cpp)
+        effects/MaxVolumeEffect.cpp
+        effects/DFTLowPassStrobo.cpp)
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -67,4 +68,5 @@ if(UNIX AND NOT APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     #comment/uncomment this, depending on your linux distro
     target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
     #target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
+    target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libfftw3.so)
 endif()
