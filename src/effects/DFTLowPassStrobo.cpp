@@ -14,6 +14,8 @@
 #define MAX_VALUE_MARGIN 0.6
 //the rate of depletion/blur for the effect between 0.9 and 0.1
 #define STROBO_DEPLETION_FACTOR 0.4
+//define the absolute brightness
+#define BRIGHTNESS 1
 
 DFTLowPassStrobo::DFTLowPassStrobo() {
     lastBrightness = 0;
@@ -32,7 +34,16 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
         in[i] = data[i];
     }
 
-    fftw_execute(p); /* repeat as needed */
+    for(int i = 0; i < 100; i++){
+        fftw_execute(p); /* repeat as needed */
+    }
+
+    //check if no music is playing
+    if(out[0][0] == 0){
+        //reset the parameters
+        lastBrightness = 0;
+        _maxValueThreshold = 1;
+    }
 
     //low pass filter
     _100Minimum = outSize * MINIMUM_100HZ;
@@ -40,33 +51,52 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     _500Minimum = outSize * MINIMUM_500HZ;
     _500Maximum = outSize * MAXIMUM_500HZ;
     //std::cout << _100Minimum << " " << _100Maximum << " " << _500Minimum << " " << _500Maximum << std::endl;
-    double maximum = 0;
-    unsigned long indexOfMaximum = 0;
-    for(int i = 1; i < outSize; i++){
+    double maximum100 = 0;
+    //check the lower base spectrum for maxima
+    for(unsigned long i = _100Minimum; i <= _100Maximum; i++){
         //only get the real part (index 0)
         double currentValue = std::abs(out[i][0]);
-        if(currentValue > maximum && currentValue > _maxValueThreshold){
-            maximum = currentValue;
-            indexOfMaximum = i;
+        if(currentValue > maximum100 && currentValue > _maxValueThreshold){
+            maximum100 = currentValue;
         }
     }
-    //check if the maximum is somewhere in the low frequencies and blur the strobo effect
+    double maximum500 = 0;
+    //check the upper base spectrum for maxima
+    for(unsigned long i = _500Minimum; i <= _500Maximum; i++){
+        //only get the real part (index 0)
+        double currentValue = std::abs(out[i][0]);
+        if(currentValue > maximum500 && currentValue > _maxValueThreshold){
+            maximum500 = currentValue;
+        }
+    }
+
+
+    //check if a maximum was discovered in the low frequencies
     char8_t brightness;
-    if((indexOfMaximum >= _100Minimum && indexOfMaximum <= _100Maximum) || (indexOfMaximum >= _500Minimum && indexOfMaximum <= _500Maximum)){
+    if(maximum100 > 0 || maximum500 > 0){
+        //set maximum
         brightness = 255;
-        _maxValueThreshold = maximum * MAX_VALUE_MARGIN;
+        if(maximum100 < maximum500){
+            _maxValueThreshold = maximum500 * MAX_VALUE_MARGIN;
+        }else{
+            _maxValueThreshold = maximum100 * MAX_VALUE_MARGIN;
+        }
     }else{
+        //fade out
         if(brightness > 0){
             brightness = STROBO_DEPLETION_FACTOR * lastBrightness;
         }
     }
     lastBrightness = brightness;
 
+    //limit the brightness
+    brightness = BRIGHTNESS * brightness;
+
     //send data
     for(int i = 0; i < LED_AMOUNT; i++){
         _red[i] = brightness;
-        _green[i] = brightness;
-        _blue[i] = brightness;
+        _green[i] = 0;
+        _blue[i] = 0;
     }
     _network->sendData(_red, _green, _blue);
 
