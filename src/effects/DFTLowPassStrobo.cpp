@@ -4,18 +4,17 @@
 
 #include "DFTLowPassStrobo.h"
 //DFT = discrete fourier transform
-//the maximum audible frequency in Hz
-#define FREQUENCY_SPECTRUM 20000
-#define MINIMUM_100HZ 0.003
-#define MAXIMUM_100HZ 0.0065
-#define MINIMUM_500HZ 0.015
-#define MAXIMUM_500HZ 0.0375
+//frequency bounds for the fft
+#define MINIMUM_100HZ 60
+#define MAXIMUM_100HZ 130
+#define MINIMUM_500HZ 301
+#define MAXIMUM_500HZ 750
 //the threshold to be reached for a peak to be detected
 #define MAX_VALUE_MARGIN 0.6
 //the rate of depletion/blur for the effect between 0.9 and 0.1
 #define STROBO_DEPLETION_FACTOR 0.4
 //define the absolute brightness
-#define BRIGHTNESS 1
+#define BRIGHTNESS 0.4
 
 DFTLowPassStrobo::DFTLowPassStrobo() {
     lastBrightness = 0;
@@ -24,6 +23,7 @@ DFTLowPassStrobo::DFTLowPassStrobo() {
 
 void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     unsigned long n = data.size();
+    //std::cout << n << std::endl;
     unsigned long outSize = (n/2+1);
     //create a plan for the dft
     auto *in = new double[n];
@@ -34,7 +34,7 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
         in[i] = data[i];
     }
 
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < n; i++){
         fftw_execute(p); /* repeat as needed */
     }
 
@@ -45,11 +45,12 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
         _maxValueThreshold = 1;
     }
 
+    unsigned long frequencyBandwidth = (unsigned long) SAMPLE_RATE / n;
     //low pass filter
-    _100Minimum = outSize * MINIMUM_100HZ;
-    _100Maximum = outSize * MAXIMUM_100HZ;
-    _500Minimum = outSize * MINIMUM_500HZ;
-    _500Maximum = outSize * MAXIMUM_500HZ;
+    _100Minimum = MINIMUM_100HZ / frequencyBandwidth;
+    _100Maximum = MAXIMUM_100HZ / frequencyBandwidth;
+    _500Minimum = MINIMUM_500HZ / frequencyBandwidth;
+    _500Maximum = MAXIMUM_500HZ / frequencyBandwidth;
     //std::cout << _100Minimum << " " << _100Maximum << " " << _500Minimum << " " << _500Maximum << std::endl;
     double maximum100 = 0;
     //check the lower base spectrum for maxima
@@ -65,11 +66,15 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     for(unsigned long i = _500Minimum; i <= _500Maximum; i++){
         //only get the real part (index 0)
         double currentValue = std::abs(out[i][0]);
-        if(currentValue > maximum500 && currentValue > _maxValueThreshold){
+        if(currentValue > maximum500 && currentValue >= _maxValueThreshold){
             maximum500 = currentValue;
         }
     }
-
+    /*
+    if(maximum100 > 0 || maximum500 > 0){
+        std::cout << "Maximum100: " << maximum100 << " Maximum500: " << maximum500 << std::endl;
+    }
+     */
 
     //check if a maximum was discovered in the low frequencies
     char8_t brightness;

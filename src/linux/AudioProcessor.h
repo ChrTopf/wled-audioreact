@@ -13,7 +13,7 @@
 #include "../Effect.h"
 
 //#define BUFFER_SIZE 1470 //882 for 50fps, 1470 for 30fps
-#define BUFFER_SIZE 3000
+#define BUFFER_SIZE 2048
 
 class AudioProcessor{
 private:
