@@ -9,6 +9,8 @@
 #include "RMSMaxVolumeEffect.h"
 #include "MaxVolumeEffect.h"
 #include "DFTLowPassStrobo.h"
+#include "DFTFrequencySpectrum.h"
+#include "DFTLowFrequencySpectrum.h"
 
 
 class Effects{
@@ -20,7 +22,9 @@ public:
             {"A rudimentary average volume slider", Class<AverageVolumeEffect>},
             {"True RMS volume slider with maximum volume tip", Class<RMSMaxVolumeEffect>},
             {"A basic maximum volume slider", Class<MaxVolumeEffect>},
-            {"Stroboscopic white light reacting to the low frequencies", Class<DFTLowPassStrobo>}
+            {"Stroboscopic white light reacting to the low frequencies", Class<DFTLowPassStrobo>},
+            {"Frequency spectrum analyzer", Class<DFTFrequencySpectrum>},
+            {"Frequency spectrum analyzer for low frequencies", Class<DFTLowFrequencySpectrum>}
     };
 };
 

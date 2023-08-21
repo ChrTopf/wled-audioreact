@@ -10,39 +10,41 @@
 #define MINIMUM_500HZ 301
 #define MAXIMUM_500HZ 750
 //the threshold to be reached for a peak to be detected
-#define MAX_VALUE_MARGIN 0.6
+#define MAX_VALUE_THRESHOLD 0.88
 //the rate of depletion/blur for the effect between 0.9 and 0.1
-#define STROBO_DEPLETION_FACTOR 0.4
+#define STROBO_DEPLETION_FACTOR 0.5
 //define the absolute brightness
 #define BRIGHTNESS 0.4
 
 DFTLowPassStrobo::DFTLowPassStrobo() {
     lastBrightness = 0;
-    _maxValueThreshold = 1;
+    _maxValue100 = 20;
+    _maxValue500 = 20;
 }
 
 void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     unsigned long n = data.size();
     //std::cout << n << std::endl;
-    unsigned long outSize = (n/2+1);
+    unsigned long outSize = (n / 2 + 1);
     //create a plan for the dft
     auto *in = new double[n];
-    out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * outSize);
+    out = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * outSize);
     p = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
     //parse the data into the input of the fft
-    for(int i = 0; i < n; i++){
+    for (int i = 0; i < n; i++) {
         in[i] = data[i];
     }
 
-    for(int i = 0; i < n; i++){
+    for (int i = 0; i < n; i++) {
         fftw_execute(p); /* repeat as needed */
     }
 
     //check if no music is playing
-    if(out[0][0] == 0){
+    if (out[0][0] == 0) {
         //reset the parameters
         lastBrightness = 0;
-        _maxValueThreshold = 1;
+        _maxValue100 = 20;
+        _maxValue500 = 20;
     }
 
     unsigned long frequencyBandwidth = (unsigned long) SAMPLE_RATE / n;
@@ -52,40 +54,37 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     _500Minimum = MINIMUM_500HZ / frequencyBandwidth;
     _500Maximum = MAXIMUM_500HZ / frequencyBandwidth;
     //std::cout << _100Minimum << " " << _100Maximum << " " << _500Minimum << " " << _500Maximum << std::endl;
-    double maximum100 = 0;
+    double sum100 = 0;
+    unsigned int size100 = 0;
     //check the lower base spectrum for maxima
-    for(unsigned long i = _100Minimum; i <= _100Maximum; i++){
+    for (unsigned long i = _100Minimum; i <= _100Maximum; i++) {
         //only get the real part (index 0)
-        double currentValue = std::abs(out[i][0]);
-        if(currentValue > maximum100 && currentValue > _maxValueThreshold){
-            maximum100 = currentValue;
-        }
+        sum100 += sqrt(pow(out[i][0], 2) + pow(out[i][1], 2));
+        size100++;
     }
-    double maximum500 = 0;
+    double sum500 = 0;
+    unsigned int size500 = 0;
     //check the upper base spectrum for maxima
-    for(unsigned long i = _500Minimum; i <= _500Maximum; i++){
+    for (unsigned long i = _500Minimum; i <= _500Maximum; i++) {
         //only get the real part (index 0)
-        double currentValue = std::abs(out[i][0]);
-        if(currentValue > maximum500 && currentValue >= _maxValueThreshold){
-            maximum500 = currentValue;
-        }
+        sum500 += sqrt(pow(out[i][0], 2) + pow(out[i][1], 2));
+        size500++;
     }
-    /*
-    if(maximum100 > 0 || maximum500 > 0){
-        std::cout << "Maximum100: " << maximum100 << " Maximum500: " << maximum500 << std::endl;
-    }
-     */
+    //calculate the average value
+    double average100 = sum100 / size100;
+    double average500 = sum500 / size500;
+
+    //std::cout << "Maximum100: " << average100 << " Maximum500: " << average500 << std::endl;
 
     //check if a maximum was discovered in the low frequencies
     char8_t brightness;
-    if(maximum100 > 0 || maximum500 > 0){
+    if (average100 > (_maxValue100 * MAX_VALUE_THRESHOLD)) {
         //set maximum
         brightness = 255;
-        if(maximum100 < maximum500){
-            _maxValueThreshold = maximum500 * MAX_VALUE_MARGIN;
-        }else{
-            _maxValueThreshold = maximum100 * MAX_VALUE_MARGIN;
-        }
+        _maxValue100 = average100;
+    } else if (average500 > (_maxValue500 * MAX_VALUE_THRESHOLD)){
+        brightness = 255;
+        _maxValue500 = average500;
     }else{
         //fade out
         if(brightness > 0){
@@ -100,8 +99,8 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     //send data
     for(int i = 0; i < LED_AMOUNT; i++){
         _red[i] = brightness;
-        _green[i] = 0;
-        _blue[i] = 0;
+        _green[i] = brightness;
+        _blue[i] = brightness;
     }
     _network->sendData(_red, _green, _blue);
 

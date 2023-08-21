@@ -3,9 +3,9 @@
     "0": "192.168.241.59"
   },
   "audioStream": "default",
-  "effectIndex": 1,
+  "effectIndex": 5,
   "ledAmount": 144,
-  "loglevel": 1,
+  "loglevel": 0,
   "sampleRate": 44100.0,
   "streamBlacklist": {
     "0": "upmix",

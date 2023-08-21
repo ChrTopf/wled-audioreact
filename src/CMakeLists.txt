@@ -23,7 +23,9 @@ add_executable(wled-audioreact
         effects/RMSMaxVolumeEffect.cpp
         effects/AverageVolumeEffect.cpp
         effects/MaxVolumeEffect.cpp
-        effects/DFTLowPassStrobo.cpp)
+        effects/DFTLowPassStrobo.cpp
+        effects/DFTFrequencySpectrum.cpp
+        effects/DFTLowFrequencySpectrum.cpp)
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
