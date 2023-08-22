@@ -2,7 +2,7 @@
 // Created by chrtopf on 17.08.23.
 //
 
-#include "DFTLowPassStrobo.h"
+#include "DFTRockStrobo.h"
 //DFT = discrete fourier transform
 //frequency bounds for the fft
 #define MINIMUM_100HZ 60
@@ -10,19 +10,19 @@
 #define MINIMUM_500HZ 301
 #define MAXIMUM_500HZ 750
 //the threshold to be reached for a peak to be detected
-#define MAX_VALUE_THRESHOLD 0.88
+#define MAX_VALUE_THRESHOLD 0.80
 //the rate of depletion/blur for the effect between 0.9 and 0.1
-#define STROBO_DEPLETION_FACTOR 0.5
+#define STROBO_DEPLETION_FACTOR 0.3
 //define the absolute brightness
-#define BRIGHTNESS 0.4
+#define BRIGHTNESS 1
 
-DFTLowPassStrobo::DFTLowPassStrobo() {
+DFTRockStrobo::DFTRockStrobo() {
     lastBrightness = 0;
     _maxValue100 = 20;
     _maxValue500 = 20;
 }
 
-void DFTLowPassStrobo::onData(const std::vector<float> &data) {
+void DFTRockStrobo::onData(const std::vector<float> &data) {
     unsigned long n = data.size();
     //std::cout << n << std::endl;
     unsigned long outSize = (n / 2 + 1);
@@ -59,7 +59,7 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     //check the lower base spectrum for maxima
     for (unsigned long i = _100Minimum; i <= _100Maximum; i++) {
         //only get the real part (index 0)
-        sum100 += sqrt(pow(out[i][0], 2) + pow(out[i][1], 2));
+        sum100 += sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         size100++;
     }
     double sum500 = 0;
@@ -67,7 +67,7 @@ void DFTLowPassStrobo::onData(const std::vector<float> &data) {
     //check the upper base spectrum for maxima
     for (unsigned long i = _500Minimum; i <= _500Maximum; i++) {
         //only get the real part (index 0)
-        sum500 += sqrt(pow(out[i][0], 2) + pow(out[i][1], 2));
+        sum500 += sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         size500++;
     }
     //calculate the average value

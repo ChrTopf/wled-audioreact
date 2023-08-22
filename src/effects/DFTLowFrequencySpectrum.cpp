@@ -24,7 +24,7 @@ void DFTLowFrequencySpectrum::onData(const std::vector<float> &data) {
     //send data
     for(int i = 0; i < LED_AMOUNT; i++){
         //calculate the temperature
-        double temperature = sqrt(pow(out[i][0], 2) + pow(out[i][1], 2)) * 2;
+        double temperature = sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]) * 2;
         //prevent index out of bounds
         if(temperature > 432){
             temperature = 432;

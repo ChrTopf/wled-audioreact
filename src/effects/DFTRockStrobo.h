@@ -2,13 +2,13 @@
 // Created by chrtopf on 17.08.23.
 //
 
-#ifndef WLED_AUDIOREACT_DFTLOWPASSSTROBO_H
-#define WLED_AUDIOREACT_DFTLOWPASSSTROBO_H
+#ifndef WLED_AUDIOREACT_DFTROCKSTROBO_H
+#define WLED_AUDIOREACT_DFTROCKSTROBO_H
 #include "../Effect.h"
 #include "fftw3.h"
 #include "math.h"
 
-class DFTLowPassStrobo : public Effect{
+class DFTRockStrobo : public Effect{
 private:
     fftw_complex *out;
     fftw_plan p;
@@ -20,9 +20,9 @@ private:
     unsigned long _500Maximum;
     char8_t lastBrightness;
 public:
-    DFTLowPassStrobo();
+    DFTRockStrobo();
     void onData(const std::vector<float> &data) override;
 };
 
 
-#endif //WLED_AUDIOREACT_DFTLOWPASSSTROBO_H
+#endif //WLED_AUDIOREACT_DFTROCKSTROBO_H

@@ -14,7 +14,7 @@ void DFTFrequencySpectrum::onData(const std::vector<float> &data) {
     p = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
     //parse the data into the input of the fft
     for (int i = 0; i < n; i++) {
-        in[i] = data[i] * 32;
+        in[i] = data[i] * 8;
     }
 
     for (int i = 0; i < n; i++) {
@@ -30,7 +30,7 @@ void DFTFrequencySpectrum::onData(const std::vector<float> &data) {
         //cumulate every value for each LED
         double sum = 0;
         for(int k = 0; k < bandwidthPerLED; k++){
-            sum += sqrt(pow(out[h][0], 2) + pow(out[h][1], 2));
+            sum += sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
             h++;
         }
         //calculate the temperature
