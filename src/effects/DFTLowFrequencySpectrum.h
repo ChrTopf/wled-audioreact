@@ -6,7 +6,7 @@
 #define WLED_AUDIOREACT_DFTLOWFREQUENCYSPECTRUM_H
 #include "../Effect.h"
 #include "fftw3.h"
-#include "math.h"
+#include <cmath>
 
 class DFTLowFrequencySpectrum : public Effect {
 private:

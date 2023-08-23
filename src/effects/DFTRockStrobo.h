@@ -6,7 +6,7 @@
 #define WLED_AUDIOREACT_DFTROCKSTROBO_H
 #include "../Effect.h"
 #include "fftw3.h"
-#include "math.h"
+#include <cmath>
 
 class DFTRockStrobo : public Effect{
 private:
