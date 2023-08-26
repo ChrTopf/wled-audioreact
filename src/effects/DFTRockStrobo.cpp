@@ -25,22 +25,11 @@ DFTRockStrobo::DFTRockStrobo() {
 void DFTRockStrobo::onData(const std::vector<float> &data) {
     unsigned long n = data.size();
     //std::cout << n << std::endl;
-    unsigned long outSize = (n / 2 + 1);
-    //create a plan for the dft
-    auto *in = new double[n];
-    out = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * outSize);
-    p = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
-    //parse the data into the input of the fft
-    for (int i = 0; i < n; i++) {
-        in[i] = data[i];
-    }
 
-    for (int i = 0; i < n; i++) {
-        fftw_execute(p); /* repeat as needed */
-    }
+    fft.realToAbsoluteDFT(data, out);
 
     //check if no music is playing
-    if (out[0][0] == 0) {
+    if (out[0] == 0) {
         //reset the parameters
         lastBrightness = 0;
         _maxValue100 = 20;
@@ -59,7 +48,7 @@ void DFTRockStrobo::onData(const std::vector<float> &data) {
     //check the lower base spectrum for maxima
     for (unsigned long i = _100Minimum; i <= _100Maximum; i++) {
         //only get the real part (index 0)
-        sum100 += sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
+        sum100 += out[i];
         size100++;
     }
     double sum500 = 0;
@@ -67,7 +56,7 @@ void DFTRockStrobo::onData(const std::vector<float> &data) {
     //check the upper base spectrum for maxima
     for (unsigned long i = _500Minimum; i <= _500Maximum; i++) {
         //only get the real part (index 0)
-        sum500 += sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
+        sum500 += out[i];
         size500++;
     }
     //calculate the average value
@@ -103,9 +92,4 @@ void DFTRockStrobo::onData(const std::vector<float> &data) {
         _blue[i] = brightness;
     }
     _network->sendData(_red, _green, _blue);
-
-    //tidy up
-    fftw_destroy_plan(p);
-    delete[] in;
-    fftw_free(out);
 }

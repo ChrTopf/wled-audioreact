@@ -6,7 +6,7 @@
   "effectIndex": 5,
   "ledAmount": 144,
   "loglevel": 0,
-  "sampleRate": 44100.0,
+  "sampleRate": 48000.0,
   "streamBlacklist": {
     "0": "upmix",
     "1": "vdownmix"

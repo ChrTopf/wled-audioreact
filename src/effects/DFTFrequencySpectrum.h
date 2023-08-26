@@ -5,13 +5,13 @@
 #ifndef WLED_AUDIOREACT_DFTFREQUENCYSPECTRUM_H
 #define WLED_AUDIOREACT_DFTFREQUENCYSPECTRUM_H
 #include "../Effect.h"
-#include "fftw3.h"
+#include "FFT.h"
 #include <cmath>
 
 class DFTFrequencySpectrum : public Effect{
 private:
-    fftw_complex *out;
-    fftw_plan p;
+    FFT fft;
+    std::vector<double> out;
     inline const static unsigned int IRON_COLORS[] = {
             0x00000a, 0x000014, 0x00001e, 0x000025, 0x00002a, 0x00002e, 0x000032, 0x000036,
             0x00003a, 0x00003e, 0x000042, 0x000046, 0x00004a, 0x00004f, 0x000052, 0x010055,

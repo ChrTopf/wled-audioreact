@@ -7,19 +7,9 @@
 void DFTFrequencySpectrum::onData(const std::vector<float> &data) {
     unsigned long n = data.size();
     //std::cout << n << std::endl;
-    unsigned long outSize = (n / 2 + 1);
-    //create a plan for the dft
-    auto *in = new double[n];
-    out = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * outSize);
-    p = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
-    //parse the data into the input of the fft
-    for (int i = 0; i < n; i++) {
-        in[i] = data[i] * 8;
-    }
 
-    for (int i = 0; i < n; i++) {
-        fftw_execute(p); /* repeat as needed */
-    }
+    fft.realToAbsoluteDFT(data, out);
+    unsigned long outSize = out.size();
 
     //determine how the frequency bandwidth for each led
     unsigned int bandwidthPerLED = outSize / LED_AMOUNT;
@@ -30,7 +20,7 @@ void DFTFrequencySpectrum::onData(const std::vector<float> &data) {
         //cumulate every value for each LED
         double sum = 0;
         for(int k = 0; k < bandwidthPerLED; k++){
-            sum += sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
+            sum += out[i];
             h++;
         }
         //calculate the temperature
@@ -47,9 +37,4 @@ void DFTFrequencySpectrum::onData(const std::vector<float> &data) {
     }
 
     _network->sendData(_red, _green, _blue);
-
-    //tidy up
-    fftw_destroy_plan(p);
-    delete[] in;
-    fftw_free(out);
 }

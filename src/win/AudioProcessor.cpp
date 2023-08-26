@@ -141,7 +141,7 @@ void AudioProcessor::onRun() {
                         hr = pAudioClient->Initialize(
                                 AUDCLNT_SHAREMODE_SHARED,
                                 AUDCLNT_STREAMFLAGS_LOOPBACK,
-                                0,
+                                BUFFER_SIZE,
                                 0,
                                 waveFormat,
                                 NULL);
@@ -169,7 +169,7 @@ void AudioProcessor::onRun() {
                                         UINT32 packetLength = 0;
                                         DWORD flags;
                                         UINT32 numFramesAvailable;
-                                        float buffer[bufferFrameCount * 2];
+                                        float buffer[BUFFER_SIZE * 2];
                                         unsigned int bufferedSamples = 0;
                                         //process the buffer
                                         while(running){
@@ -199,7 +199,7 @@ void AudioProcessor::onRun() {
                                                     bufferedSamples += numFramesAvailable;
                                                 }
                                                 //check if the buffer is full
-                                                if(bufferedSamples >= bufferFrameCount){
+                                                if(bufferedSamples >= BUFFER_SIZE){
                                                     //check if the other thread was fast enough with processing the previous buffer
                                                     if(sampleBuffer.empty()){
                                                         //copy data into another sample buffer
