@@ -5,7 +5,9 @@
 #include "FFT.h"
 
 void FFT::realToAbsoluteDFT(const std::vector<float> &input, std::vector<double> &output) {
-    unsigned long n = data.size();
+    unsigned long n = input.size();
+    //clear the output array
+    output.clear();
     //std::cout << n << std::endl;
     unsigned long outSize = (n / 2 + 1);
     //create a plan for the dft
@@ -14,14 +16,16 @@ void FFT::realToAbsoluteDFT(const std::vector<float> &input, std::vector<double>
     p = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
     //parse the data into the input of the fft
     for (int i = 0; i < n; i++) {
-        in[i] = data[i];
+        in[i] = input[i];
     }
 
     for (int i = 0; i < n; i++) {
         fftw_execute(p); /* repeat as needed */
     }
 
-    sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
+    for(int i = 0; i < outSize; i++){
+        output.push_back(sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]));
+    }
 
     //tidy up
     fftw_destroy_plan(p);

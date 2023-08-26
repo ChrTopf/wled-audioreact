@@ -3,7 +3,7 @@
     "0": "192.168.241.59"
   },
   "audioStream": "default",
-  "effectIndex": 5,
+  "effectIndex": 6,
   "ledAmount": 144,
   "loglevel": 0,
   "sampleRate": 48000.0,
