@@ -5,13 +5,13 @@
 #ifndef WLED_AUDIOREACT_DFTELECTRONICSTROBO_H
 #define WLED_AUDIOREACT_DFTELECTRONICSTROBO_H
 #include "../Effect.h"
-#include "FFT.h"
+#include "fftw3.h"
 #include <cmath>
 
 class DFTElectronicStrobo : public Effect{
 private:
-    FFT fft;
-    std::vector<double> out;
+    fftw_complex *out;
+    fftw_plan p;
     double _maxValue;
     char8_t lastBrightness;
 public:

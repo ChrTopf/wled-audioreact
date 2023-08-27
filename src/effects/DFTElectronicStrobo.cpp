@@ -24,11 +24,22 @@ DFTElectronicStrobo::DFTElectronicStrobo() {
 void DFTElectronicStrobo::onData(const std::vector<float> &data) {
     unsigned long n = data.size();
     //std::cout << n << std::endl;
+    unsigned long outSize = (n / 2 + 1);
+    //create a plan for the dft
+    auto *in = new double[n];
+    out = (fftw_complex *) fftw_malloc(sizeof(fftw_complex) * outSize);
+    p = fftw_plan_dft_r2c_1d(n, in, out, FFTW_ESTIMATE);
+    //parse the data into the input of the fft
+    for (int i = 0; i < n; i++) {
+        in[i] = data[i];
+    }
 
-    fft.realToAbsoluteDFT(data, out);
+    for (int i = 0; i < n; i++) {
+        fftw_execute(p); /* repeat as needed */
+    }
 
     //check if no music is playing
-    if (out[0] == 0) {
+    if (out[0][0] == 0) {
         //reset the parameters
         lastBrightness = 0;
         _maxValue = 20;
@@ -42,7 +53,7 @@ void DFTElectronicStrobo::onData(const std::vector<float> &data) {
     //check the lower base spectrum for maxima
     for (unsigned long i = 1; i <= 5; i++) {
         //only get the real part (index 0)
-        sum += out[i];
+        sum += sqrt(out[i][0] * out[i][0] + out[i][1] * out[i][1]);
         size++;
     }
     //calculate the average value
@@ -74,4 +85,9 @@ void DFTElectronicStrobo::onData(const std::vector<float> &data) {
         _blue[i] = brightness;
     }
     _network->sendData(_red, _green, _blue);
+
+    //tidy up
+    fftw_destroy_plan(p);
+    delete[] in;
+    fftw_free(out);
 }
