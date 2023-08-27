@@ -70,8 +70,8 @@ target_include_directories(wled-audioreact PRIVATE ../dependencies/asio/)
 #windows build
 if(WIN32)
     add_definitions(-DWINDOWS_BUILD)
+    #wasapi
     target_include_directories(wled-audioreact PRIVATE win/)
-    target_include_directories(wled-audioreact PRIVATE ../dependencies/fftw)
     target_sources(wled-audioreact PRIVATE win/AudioProcessor.cpp)
     target_link_libraries(wled-audioreact PRIVATE ws2_32)
     target_link_libraries(wled-audioreact PRIVATE ole32.dll)
@@ -81,17 +81,20 @@ if(WIN32)
     target_link_libraries(wled-audioreact PRIVATE user32.lib)
     target_link_libraries(wled-audioreact PRIVATE winmm.lib)
     target_link_libraries(wled-audioreact PRIVATE ${PROJECT_SOURCE_DIR}/../dependencies/fftw/libfftw3-3.lib)
+    #fftw
+    target_include_directories(wled-audioreact PRIVATE ../dependencies/fftw)
     copy_file_to_build_output(${PROJECT_SOURCE_DIR}/../dependencies/fftw/libfftw3-3.dll)
 endif()
 
 #linux build
 if(UNIX AND NOT APPLE AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_definitions(-DDEBIAN_BUILD)
+    #portaudio
     target_include_directories(wled-audioreact PRIVATE linux/)
     target_sources(wled-audioreact PRIVATE linux/AudioProcessor.cpp)
-    target_sources(wled-audioreact PRIVATE linux/FFT.cpp)
     #comment/uncomment this, depending on your linux distro
     target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libportaudio.so)
     #target_link_libraries(wled-audioreact PRIVATE /usr/lib/libportaudio.so)
+    #fftw
     target_link_libraries(wled-audioreact PRIVATE /usr/lib/x86_64-linux-gnu/libfftw3.so)
 endif()
