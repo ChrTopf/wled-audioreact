@@ -10,7 +10,7 @@
 #define MINIMUM_500HZ 301
 #define MAXIMUM_500HZ 750
 //the threshold to be reached for a peak to be detected
-#define MAX_VALUE_THRESHOLD 0.80
+#define DELTA_THRESHOLD 0.80
 //the rate of depletion/blur for the effect between 0.9 and 0.1
 #define STROBO_DEPLETION_FACTOR 0.3
 //define the absolute brightness
@@ -63,7 +63,7 @@ void DFTElectronicStrobo::onData(const std::vector<float> &data) {
 
     //check if a maximum was discovered in the low frequencies
     char8_t brightness;
-    if (average > (_maxValue * MAX_VALUE_THRESHOLD)) {
+    if (average > (_maxValue * DELTA_THRESHOLD)) {
         //set maximum
         brightness = 255;
         _maxValue = average;
