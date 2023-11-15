@@ -2,9 +2,9 @@
 
 This application generates cool light effects for your [WLED](https://kno.wled.ge/) driven strips based on the music currently playing on your computer. You can choose from multiple effects and audio sources, adding another dimension to your music listening experience.
 
-## !Warning!
+## ! Warning !
 
-This application can potentially trigger seizures for people with photosensitive epilepsy.
+**This application can potentially trigger seizures for people with photosensitive epilepsy.**
 
 ## License
 
@@ -32,13 +32,20 @@ For further licensing information, please have a look at [LICENSE](LICENSE).
 
 3. Start the application over the command line, choose an audio stream as input and one of the effects.
 
+![Application preview](preview.png)
+
 ## Effects
 
-| Description                                                                                                                                                    | Preview |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| A rudimentary average volume slider. Indicates the average value of all recorded audio samples. (With color cycle)                                             | W.I.P.  |
-| True RMS volume slider with maximum volume tip. An average volume slider with RMS values and a different colored tip to indicate the peaks. (With color cycle) | W.I.P.  |
-| A basic maximum volume slider. Indicates the maximum value of all recorded audio samples. (With color cycle)                                                   | W.I.P.  |
+| Description                                                                                                                                                                                                                        | Preview |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| A rudimentary average volume slider. Indicates the average value of all recorded audio samples. (With color cycle)                                                                                                                 | W.I.P.  |
+| True RMS volume slider with maximum volume tip. An average volume slider with RMS values and a different colored tip to indicate the peaks. (With color cycle)                                                                     | W.I.P.  |
+| A basic maximum volume slider. Indicates the maximum value of all recorded audio samples. (With color cycle)                                                                                                                       | W.I.P.  |
+| Stroboscopic white light reacting to the frequencies of rock music. Each time a base or drum sounds the whole LED Stripe flashes in white.                                                                                         | W.I.P.  |
+| Frequency spectrum analyzer. Visualizes the frequencies in the music by using a iron color pallette (like thermal imaging camera) and the discrete fourier transform. (z-transform) The first LED represents the lowest frequency. | W.I.P.  |
+| Frequency spectrum analyzer for low frequencies. Same as above without scaling the result and focusing on the lower frequencies.                                                                                                   | W.I.P.  |
+| Stroboscopic white light reacting to the frequencies of electronic music. Each time a base sounds the whole LED Stripe flashes in white.                                                                                           | W.I.P.  |
+| Stroboscopic white light reacting to RMS peak volume. Reacts to peaks in volume and flashes the whole LED Stripe in white.                                                                                                         | W.I.P.  |
 
 ## Configuration
 
@@ -53,6 +60,14 @@ The configuration file `settings.json` contains the following entries:
 | `ledAmount`       | `144`                                                  | The amount of LEDs controlled by each WLED client. If you have clients with 144 LEDs each, this parameter should be 144. Only linear (one dimensional) LED stripes are supported. No LED matrices or LED cubes. For setups with multiple stripe Lengths, this should be the length of the smallest one. |
 | `loglevel`        | `1`                                                    | The level, that determines which log messages are printed. This parameter specifies the lowest level to be printed.<br/>`0` : Debug<br/>`1` : Info<br/>`2` : Warning<br/>`3` : Error                                                                                                                    |
 | `streamBlacklist` | `"0": "upmix",`<br/>`"1": "vdownmix"`                  | A list of audio stream names, that should not be selected by this application. This needs to be configured manually.                                                                                                                                                                                    |
+
+## Build your own wled-audioreact driven LED Stripes
+
+We recommend the [getting started guide](https://kno.wled.ge/basics/getting-started/) from WLED to build your very own stripe.
+
+Have a look at the [parts list](hardware/PARTS_LIST.md) provided by this repository to find out how we did it.
+
+Our schematics and 3D Models are also provided in the `hardware/` directory of this repository.
 
 ## Developer Notes
 
@@ -82,3 +97,6 @@ The configuration file `settings.json` contains the following entries:
 | 0.4     | snapshot | 21.06.2023 | fixed wrong audio stream issue; fixed audio stream setting not deleted after crash |
 | 0.5     | snapshot | 23.06.2023 | implemented sample rate and led amount setting                                     |
 | 1.0     | release  | 01.08.2023 | added support for Microsoft Windows                                                |
+| 1.1     | snapshot | 26.08.2023 | implemented fft for Windows and Linux using the eigen library                      |
+| 1.3     | snapshot | 27.08.2023 | changed fft library to the fftw library for Linux and Windows                      |
+| 1.4     | release  | 16.11.2023 | added RMS strobo effect; updated parts list                                        |
