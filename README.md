@@ -36,16 +36,16 @@ For further licensing information, please have a look at [LICENSE](LICENSE).
 
 ## Effects
 
-| Description                                                                                                                                                                                                                        | Preview |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| A rudimentary average volume slider. Indicates the average value of all recorded audio samples. (With color cycle)                                                                                                                 | W.I.P.  |
-| True RMS volume slider with maximum volume tip. An average volume slider with RMS values and a different colored tip to indicate the peaks. (With color cycle)                                                                     | W.I.P.  |
-| A basic maximum volume slider. Indicates the maximum value of all recorded audio samples. (With color cycle)                                                                                                                       | W.I.P.  |
-| Stroboscopic white light reacting to the frequencies of rock music. Each time a base or drum sounds the whole LED Stripe flashes in white.                                                                                         | W.I.P.  |
-| Frequency spectrum analyzer. Visualizes the frequencies in the music by using a iron color pallette (like thermal imaging camera) and the discrete fourier transform. (z-transform) The first LED represents the lowest frequency. | W.I.P.  |
-| Frequency spectrum analyzer for low frequencies. Same as above without scaling the result and focusing on the lower frequencies.                                                                                                   | W.I.P.  |
-| Stroboscopic white light reacting to the frequencies of electronic music. Each time a base sounds the whole LED Stripe flashes in white.                                                                                           | W.I.P.  |
-| Stroboscopic white light reacting to RMS peak volume. Reacts to peaks in volume and flashes the whole LED Stripe in white.                                                                                                         | W.I.P.  |
+| Description                                                                                                                                                                                                                        | Preview                      |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| A rudimentary average volume slider. Indicates the average value of all recorded audio samples. (With color cycle)                                                                                                                 | https://youtu.be/dKLQ1E0vICo |
+| True RMS volume slider with maximum volume tip. An average volume slider with RMS values and a different colored tip to indicate the peaks. (With color cycle)                                                                     | https://youtu.be/XVBKG4giQXc |
+| A basic maximum volume slider. Indicates the maximum value of all recorded audio samples. (With color cycle)                                                                                                                       | https://youtu.be/GHFU9uqTnNY |
+| Stroboscopic white light reacting to the frequencies of rock music. Each time a base or drum sounds the whole LED Stripe flashes in white.                                                                                         | https://youtu.be/slSAnZhB0bI |
+| Frequency spectrum analyzer. Visualizes the frequencies in the music by using a iron color pallette (like thermal imaging camera) and the discrete fourier transform. (z-transform) The first LED represents the lowest frequency. | https://youtu.be/G9idCGDR-Lc |
+| Frequency spectrum analyzer for low frequencies. Same as above without scaling the result and focusing on the lower frequencies.                                                                                                   | https://youtu.be/Tq3pwMvruTA |
+| Stroboscopic white light reacting to the frequencies of electronic music. Each time a base sounds the whole LED Stripe flashes in white.                                                                                           | https://youtu.be/iOoDIP9EUwo |
+| Stroboscopic white light reacting to RMS peak volume. Reacts to peaks in volume and flashes the whole LED Stripe in white.                                                                                                         | https://youtu.be/PktWWTVJIds |
 
 ## Configuration
 
@@ -99,4 +99,4 @@ Our schematics and 3D Models are also provided in the `hardware/` directory of t
 | 1.0     | release  | 01.08.2023 | added support for Microsoft Windows                                                |
 | 1.1     | snapshot | 26.08.2023 | implemented fft for Windows and Linux using the eigen library                      |
 | 1.3     | snapshot | 27.08.2023 | changed fft library to the fftw library for Linux and Windows                      |
-| 1.4     | release  | 16.11.2023 | added RMS strobo effect; updated parts list                                        |
+| 1.4     | release  | 19.11.2023 | added RMS strobo effect; updated parts list                                        |
