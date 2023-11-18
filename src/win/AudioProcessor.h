@@ -21,6 +21,8 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include <Audiopolicy.h>
 
+#define BUFFER_SIZE 2048
+
 class AudioProcessor{
 private:
     //singleton

@@ -8,7 +8,11 @@
 #include "AverageVolumeEffect.h"
 #include "RMSMaxVolumeEffect.h"
 #include "MaxVolumeEffect.h"
-
+#include "DFTRockStrobo.h"
+#include "DFTFrequencySpectrum.h"
+#include "DFTLowFrequencySpectrum.h"
+#include "DFTElectronicStrobo.h"
+#include "RMSMaxVolumeStrobo.h"
 
 class Effects{
 private:
@@ -18,7 +22,12 @@ public:
             //list all effects here
             {"A rudimentary average volume slider", Class<AverageVolumeEffect>},
             {"True RMS volume slider with maximum volume tip", Class<RMSMaxVolumeEffect>},
-            {"A basic maximum volume slider", Class<MaxVolumeEffect>}
+            {"A basic maximum volume slider", Class<MaxVolumeEffect>},
+            {"Stroboscopic white light reacting to the frequencies of rock music", Class<DFTRockStrobo>},
+            {"Frequency spectrum analyzer", Class<DFTFrequencySpectrum>},
+            {"Frequency spectrum analyzer for low frequencies", Class<DFTLowFrequencySpectrum>},
+            {"Stroboscopic white light reacting to the frequencies of electronic music", Class<DFTElectronicStrobo>},
+            {"Stroboscopic white light reacting to RMS peak volume.", Class<RMSMaxVolumeStrobo>}
     };
 };
 

@@ -7,14 +7,6 @@
 #define SPEED_MULTIPLIER 0.5f
 
 void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
-    //go through all the samples
-    float currentMax = 0;
-    for(int i = 0; i < data.size(); i++){
-        float val = std::abs(data[i]);
-        if(val > currentMax){
-            currentMax = val;
-        }
-    }
     //cout<<currentMax<<" sampleAbsMax | ";
     float currentRMS = 0;
     for(int i = 0; i < data.size(); i++){
@@ -32,10 +24,6 @@ void RMSMaxVolumeEffect::onData(const std::vector<float> &data) {
     currentRMS = std::log10(currentRMS)*20;
     //cout<<currentRMS<<" dBm"<<endl;
     currentRMS = std::abs(1/currentRMS);
-
-    currentMax = std::log10(currentMax)*20;
-    //cout<<currentMax<<" dBm_max"<<endl;
-    currentMax = std::abs(1/currentMax);
 
     //implement causal system with delay
     //currentRMS = 0.25 * _secondLastVal + 0.5 * _lastVal + currentRMS;

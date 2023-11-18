@@ -115,6 +115,7 @@ bool AudioProcessor::start() {
     inputParameters.sampleFormat = paFloat32;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
+    EffectParameters::SAMPLE_RATE = _sampleRate;
     std::stringstream ss;
     ss << "Reading with sample rate " << _sampleRate << ".";
     Log::i(ss.str());
