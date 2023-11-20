@@ -33,3 +33,6 @@
 
 .idea
 cmake*
+
+#exclude the dependencies directory from being ignored
+!dependencies/
