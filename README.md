@@ -101,3 +101,4 @@ Our schematics and 3D Models are also provided in the `hardware/` directory of t
 | 1.1     | snapshot | 26.08.2023 | implemented fft for Windows and Linux using the eigen library                      |
 | 1.3     | snapshot | 27.08.2023 | changed fft library to the fftw library for Linux and Windows                      |
 | 1.4     | release  | 19.11.2023 | added RMS strobo effect; updated parts list                                        |
+| 1.5     | release  | 20.11.2023 | fixed missing dependencies; updated documentation                                  |
