@@ -14,7 +14,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -33,6 +32,3 @@
 
 .idea
 cmake*
-
-#exclude the dependencies directory from being ignored
-!dependencies/
