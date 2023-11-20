@@ -16,13 +16,13 @@ For further licensing information, please have a look at [LICENSE](LICENSE).
 
 ## Requirements
 
-- n WLED clients with one LED strip each. Each LED strip should have an equal amount of LEDs.
+- n WLED clients with one LED strip each (no matrix supported yet). Each LED strip should have an equal amount of LEDs.
 
 - Reliable IPv4 UDP communication between the computer and the [WLED](https://kno.wled.ge/) clients on port 21324. For further reference on the interface between this application and WLED have a look at the [WLED Documentation](https://kno.wled.ge/interfaces/udp-realtime/).
 
 - x86_64 CPU architecture
 
-- GNU/Linux or Microsoft Windows operating system
+- Debian Linux or Microsoft Windows operating system (Other Linux distros could also work, but are not yet tested)
 
 ## Installation/Usage
 
@@ -81,11 +81,12 @@ Our schematics and 3D Models are also provided in the `hardware/` directory of t
 
 ### Dependencies
 
-| Name                                       | Version    | Installation                                                                                                                            |
-| ------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Located in dependencies directory and automatically found by CMake.                                                                     |
-| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux:<br/>`sudo apt install portaudio19-dev`<br/>Windows:<br/>PortAudio is not required for the Windows build. WASAPI is used instead. |
-| [ASIO](https://think-async.com/Asio/)      | >= v1.28.0 | Located in dependencies directory and automatically found by CMake.                                                                     |
+| Name                                       | Version    | Installation                                                                                                                                                                         |
+| ------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [nlohmann JSON](https://json.nlohmann.me/) | >= v3.11.2 | Located in dependencies directory and automatically found by CMake.                                                                                                                  |
+| [PortAudio](http://www.portaudio.com/)     | >= v19.7.0 | Linux (Debian):<br/>`sudo apt install portaudio19-dev`<br/>Windows:<br/>PortAudio is not required for the Windows build. WASAPI is used instead.                                     |
+| [ASIO](https://think-async.com/Asio/)      | >= v1.28.0 | Located in dependencies directory and automatically found by CMake.                                                                                                                  |
+| [FFTW](https://www.fftw.org/)              | >= 3.3     | Linux (Debian):<br/>`sudo apt install libfftw3-dev`<br/>Windows:<br/>The fftw dll file is located in the dependencies directory of this repository and automatically found by CMake. |
 
 ## Version History
 
@@ -100,3 +101,4 @@ Our schematics and 3D Models are also provided in the `hardware/` directory of t
 | 1.1     | snapshot | 26.08.2023 | implemented fft for Windows and Linux using the eigen library                      |
 | 1.3     | snapshot | 27.08.2023 | changed fft library to the fftw library for Linux and Windows                      |
 | 1.4     | release  | 19.11.2023 | added RMS strobo effect; updated parts list                                        |
+| 1.5     | release  | 20.11.2023 | fixed missing dependencies; updated documentation                                  |
